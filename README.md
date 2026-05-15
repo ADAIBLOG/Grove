@@ -23,11 +23,11 @@ Join a community that believes your progress belongs to you, powered by open-sou
 
 🎨 **Material You Integration:** A deep, nature-inspired theme engine that supports Android 12+ dynamic coloring, adjusting your app's palette to match your wallpaper.
 
-📈 **Peak Analytics:** Beyond simple streaks, the app uses a "Peak Sweep" algorithm to track your history, relapse reasons, and consistency across an interactive monthly calendar.
+📈 **Analytics:** Beyond simple streaks, the app uses a "Peak Sweep" algorithm to track your history, relapse reasons, and consistency across an interactive monthly calendar.
 
-🔔 **Gentle Reminders:** Schedule a quiet moment of reflection to check in on your forest’s growth and stay consistent.
+🔔 **Reminders:** Schedule a quiet moment of reflection to check in on your forest’s growth and stay consistent.
 
-🔒 **Privacy Features:** Keep your journey private with biometric, Face ID, or PIN authentication to shelter your data.
+🔒 **Privacy Focused:** Keep your journey private with biometric, Face ID, or PIN authentication to shelter your data.
 
 🌐 **Fully Offline:** Fully functional without an internet connection. No cloud, no tracking; your data stays where it belongs.
 

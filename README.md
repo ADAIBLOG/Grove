@@ -32,3 +32,6 @@ Join a community that believes your progress belongs to you, powered by open-sou
 🌐 **Fully Offline:** Fully functional without an internet connection. No cloud, no tracking—your data stays where it belongs.
 
 **Grove** is free, open source, and community-driven. Built on the belief that self-improvement shouldn't come with a subscription or a data leak. No ads, no paywalls, and no hidden telemetry. Just you, your habits, and your progress-stored locally, fully owned by you.
+
+## License
+This software is free software licensed under the GNU General Public License 3.0.

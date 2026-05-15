@@ -33,5 +33,10 @@ Join a community that believes your progress belongs to you, powered by open-sou
 
 **Grove** is free, open source, and community-driven. Built on the belief that self-improvement shouldn't come with a subscription or a data leak. No ads, no paywalls, and no hidden telemetry. Just you, your habits, and your progress-stored locally, fully owned by you.
 
+## Support The App
+**Grove** is free forever — no subscriptions, no ads, no data harvesting. Just you and your trees. If Grove has helped you stay clean or build better habits, consider supporting its continued development so it can keep growing too.
+
+[<img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" width="auto" height="100" alt="Buy me a Coffee">](https://buymeacoffee.com/resurrect)
+
 ## License
 This software is free software licensed under the GNU General Public License 3.0.

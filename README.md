@@ -36,7 +36,7 @@ Join a community that believes your progress belongs to you, powered by open-sou
 ## Download 
 
 <table><tr valign="bottom">
-<td><a href="https://github.com/resurrectdev1/Grove/releases/latest"><img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80"></a></td>
+<td><a href="https://github.com/resurrectdev1/Grove/releases/latest"><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Backup/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80"></a></td>
 <td><a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/resurrectdev1/Grove"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a></td>
 </tr></table>
 

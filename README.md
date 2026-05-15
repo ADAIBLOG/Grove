@@ -35,8 +35,6 @@ Join a community that believes your progress belongs to you, powered by open-sou
 
 ## Download 
 
-[![Downloads](https://img.shields.io/github/downloads/resurrectdev1/Grove/total)](https://github.com/resurrectdev1/Grove/releases)
-[<img src="https://shields.rbtlog.dev/simple/com.resurrectdev1.grove" alt="RB Status">](https://shields.rbtlog.dev/com.resurrectdev1.grove)
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/resurrectdev1/Grove/releases/latest)
 
 ## Support The App

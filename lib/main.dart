@@ -718,7 +718,7 @@ class GroveApp extends StatelessWidget {
           }
         });
         return Consumer<GroveSettings>(
-          builder: (_, settings, _) {
+          builder: (_, settings, __) {
             final gt = settings.theme;
             SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
               statusBarColor:                    Colors.transparent,
@@ -1340,7 +1340,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                            const SizedBox(height: 20),
                            ValueListenableBuilder<bool>(
                              valueListenable: copied,
-                             builder: (_, isCopied, _) => FilledButton.icon(
+                             builder: (_, isCopied, __) => FilledButton.icon(
                                onPressed: () async {
                                  await Clipboard.setData(ClipboardData(text: json));
                                  copied.value = true;
@@ -1422,7 +1422,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                                                    const SizedBox(height: 12),
                                                    ValueListenableBuilder<bool>(
                                                      valueListenable: isPasting,
-                                                     builder: (_, hasPasted, _) => TextField(
+                                                     builder: (_, hasPasted, __) => TextField(
                                                        controller: controller, minLines: hasPasted ? 4 : 2, maxLines: hasPasted ? 6 : 4,
                                                        style: TextStyle(color: theme.textPrimary, fontSize: 12, fontFamily: 'monospace'),
                                                        onChanged: (_) { if (!isPasting.value) isPasting.value = controller.text.isNotEmpty; },
@@ -1805,7 +1805,7 @@ class _HabitCardState extends State<HabitCard> {
 
   void _goDetail(BuildContext ctx) => Navigator.push(ctx,
   PageRouteBuilder(
-    pageBuilder: (_, anim, _) => FadeTransition(opacity: anim, child: HabitDetailScreen(habitId: widget.habit.id)),
+    pageBuilder: (_, anim, __) => FadeTransition(opacity: anim, child: HabitDetailScreen(habitId: widget.habit.id)),
     transitionDuration: const Duration(milliseconds: 400),
   ),
   );
@@ -1865,7 +1865,7 @@ with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _windController,
-    builder: (_, _) => CustomPaint(
+    builder: (_, __) => CustomPaint(
       painter: FractalTreePainter(
         stage:       widget.habit.stage,
         baseColor:   widget.habit.color,

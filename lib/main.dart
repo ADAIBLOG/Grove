@@ -1,10 +1,10 @@
 // ╔═══════════════════════════════════════════════════════════════╗
-// ║ G R O V E v0.5.4                                              ║
-// ║ – Fixed onboarding trees not showing                          ║
-// ║ – Fixed notification needing no battery restriction           ║
-// ║ – Added a few easter eggs                                     ║
-// ║ - Bug fixes                                                   ║
-// ║ - Upgraded all dependencies                                   ║
+// ║ G R O V E v0.5.5                                              ║
+// ║ – Experimental Android Widget suppourt                        ║
+// ║ – Split apks for optimization and file sieze                  ║
+// ║ – Preperation for fdroid release                              ║
+// ║ – Preperation for izzyondroid release                         ║
+// ║ - App signed by my private key for all release builds         ║
 // ╚═══════════════════════════════════════════════════════════════╝
 import 'dart:async';
 import 'dart:convert';
@@ -20,6 +20,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:local_auth/local_auth.dart';
+import 'widget_bridge.dart';
 
 // ══════════════════════════════════════════════════════════════════════
 // §0 SERVICES — Notifications & Biometrics
@@ -523,6 +524,7 @@ class GroveModel extends ChangeNotifier {
     try {
       await _prefs!.setStringList(_idsKey, _habits.map((h) => h.id).toList());
       for (final h in _habits) { await _prefs!.setString(h.id, h.toJson()); }
+      await GroveWidgetBridge.instance.requestUpdate();
     } catch (e) { debugPrint('Persist error: $e'); }
   }
 
@@ -927,7 +929,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                       fontSize: 24, fontWeight: FontWeight.w800,
                       color: theme.textPrimary, letterSpacing: 1,
                     )),
-                    Text('v0.5.4 • Open Source',
+                    Text('v0.5.5 • Open Source',
                          style: TextStyle(fontSize: 12, color: theme.textSecondary)),
                   ],
                 ),

@@ -5,9 +5,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
-    <!-- ADDED: Required for exact alarm scheduling -->
+    <!-- Required for exact alarm scheduling -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <!-- ADDED: Fallback for Android 13+ if SCHEDULE_EXACT_ALARM is denied -->
+    <!-- Fallback for Android 13+ if SCHEDULE_EXACT_ALARM is denied -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
     <application
@@ -35,12 +35,12 @@
             </intent-filter>
         </activity>
 
-        <!-- ADDED: Required so flutter_local_notifications can fire while app is closed -->
+        <!-- flutter_local_notifications: fires while app is closed -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
             android:exported="false"/>
 
-        <!-- ADDED: Reschedules notifications after phone reboot -->
+        <!-- flutter_local_notifications: reschedules after reboot -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
             android:exported="true">
@@ -51,24 +51,52 @@
             </intent-filter>
         </receiver>
 
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
-        </application>
+        <!-- ── Grove Calendar Widget ──────────────────────────────────── -->
+        <receiver
+            android:name=".CalendarWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.resurrect.grove.ACTION_CAL_PREV" />
+                <action android:name="com.resurrect.grove.ACTION_CAL_NEXT" />
+                <action android:name="com.resurrect.grove.ACTION_CAL_PICK_HABIT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/calendar_widget_info" />
+            </receiver>
 
-        <queries>
-            <intent>
-                <action android:name="android.intent.action.VIEW" />
-                <data android:scheme="https" />
-            </intent>
-            <intent>
-                <action android:name="android.intent.action.VIEW" />
-                <data android:scheme="http" />
-            </intent>
-            <intent>
-                <action android:name="android.intent.action.PROCESS_TEXT"/>
-                <data android:mimeType="text/plain"/>
-            </intent>
-        </queries>
+            <!-- ── Grove Tree Widget ──────────────────────────────────────── -->
+            <receiver
+                android:name=".TreeWidgetProvider"
+                android:exported="true">
+                <intent-filter>
+                    <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                    <action android:name="com.resurrect.grove.ACTION_TREE_PICK_HABIT" />
+                </intent-filter>
+                <meta-data
+                    android:name="android.appwidget.provider"
+                    android:resource="@xml/tree_widget_info" />
+                </receiver>
 
-    </manifest>
+                <meta-data
+                    android:name="flutterEmbedding"
+                    android:value="2" />
+                </application>
+
+                <queries>
+                    <intent>
+                        <action android:name="android.intent.action.VIEW" />
+                        <data android:scheme="https" />
+                    </intent>
+                    <intent>
+                        <action android:name="android.intent.action.VIEW" />
+                        <data android:scheme="http" />
+                    </intent>
+                    <intent>
+                        <action android:name="android.intent.action.PROCESS_TEXT"/>
+                        <data android:mimeType="text/plain"/>
+                    </intent>
+                </queries>
+
+            </manifest>

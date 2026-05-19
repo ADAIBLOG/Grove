@@ -71,12 +71,8 @@ class GroveNotifications {
     final androidPlugin = _plugin
     .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
-    // Step 1: Request POST_NOTIFICATIONS permission (Android 13+)
     await androidPlugin?.requestNotificationsPermission();
 
-    // Step 2: Request SCHEDULE_EXACT_ALARM permission (Android 12+).
-    // This is what allows notifications to fire even when battery saver /
-    // Doze mode is active. Without it, alarms are deferred indefinitely.
     final exactAlarmGranted =
     await androidPlugin?.requestExactAlarmsPermission() ?? false;
     debugPrint('Grove: exact alarm permission granted: $exactAlarmGranted');
@@ -85,10 +81,9 @@ class GroveNotifications {
       android: AndroidNotificationDetails(
         _channelId, _channelName,
         channelDescription: 'Daily Grove check-in reminder',
-        importance: Importance.high,          // HIGH so heads-up shows reliably
+        importance: Importance.high,
         priority:   Priority.high,
-        // Use the dedicated small-icon drawable (white, transparent bg, <1 KB).
-        // Falls back to launcher icon if the drawable is missing.
+
         icon:       '@drawable/ic_grove_notif',
       ),
       iOS: DarwinNotificationDetails(
@@ -102,9 +97,6 @@ class GroveNotifications {
     var   target = tz.TZDateTime(tz.local, now.year, now.month, now.day, time.hour, time.minute);
     if (target.isBefore(now)) target = target.add(const Duration(days: 1));
 
-    // Use exactAllowWhileIdle so Android fires the alarm even in Doze /
-    // battery-restricted mode. This requires SCHEDULE_EXACT_ALARM (Android 12+)
-    // or USE_EXACT_ALARM (Android 13+) — declared in AndroidManifest.xml.
     await _plugin.zonedSchedule(
       id:                      _notifId,
       title:                   'Your forest is waiting 🌲',
@@ -126,7 +118,6 @@ class GroveBiometrics {
 
   final _auth = LocalAuthentication();
 
-  /// Returns true if the device supports and has enrolled biometrics.
   Future<bool> get isAvailable async {
     try {
       final canCheck   = await _auth.canCheckBiometrics;
@@ -137,7 +128,6 @@ class GroveBiometrics {
     }
   }
 
-  /// Prompts the user. Returns true on success, false on failure/cancel.
   Future<bool> authenticate() async {
     try {
       return await _auth.authenticate(
@@ -669,26 +659,20 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // Init notification plugin before anything else
   await GroveNotifications.instance.init();
 
   final groveModel      = GroveModel();
   final settingsManager = GroveSettings();
   await groveModel.init();
-  // Load settings (including onboardingDone) before runApp so the home
-  // screen's initState sees the correct value.
   await settingsManager.init(null, null);
 
-  // Re-schedule notification if it was enabled (survives app restarts)
   if (settingsManager.dailyNotification) {
     await GroveNotifications.instance.scheduleDailyReminder(time: settingsManager.notifTime);
   }
 
-  // Biometric gate — prompt before showing the app
   if (settingsManager.biometricUnlock) {
     final ok = await GroveBiometrics.instance.authenticate();
     if (!ok) {
-      // Authentication failed/cancelled — exit cleanly
       SystemNavigator.pop();
       return;
     }
@@ -822,7 +806,6 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
         backgroundColor: Colors.transparent,
         elevation:       0,
         centerTitle:     true,
-        // ── About button (left) ──────────────────────────────────
         leading: Padding(
           padding: const EdgeInsets.only(left: 16),
           child: IconButton(
@@ -837,7 +820,6 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
             fontWeight: FontWeight.w400, letterSpacing: 8,
           ),
         ),
-        // ── Settings button (right) ──────────────────────────────
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -958,7 +940,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
               theme:       theme,
             ),
             const SizedBox(height: 10),
-            // Buy Me a Coffee
+            // Buy Me a Coffee link
             _AboutLinkTile(
               icon:        Icons.coffee_rounded,
               iconColor:   const Color(0xFFFFDD57),
@@ -1233,7 +1215,6 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                                      ),
                           ]),
                         ),
-                        // Biometric Unlock toggle — only show when hardware is available
                         FutureBuilder<bool>(
                           future: GroveBiometrics.instance.isAvailable,
                           builder: (_, snap) {
@@ -1250,7 +1231,6 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                                                   onChanged: (val) async {
                                                     HapticFeedback.selectionClick();
                                                     if (val) {
-                                                      // Verify biometrics before enabling
                                                       final ok = await GroveBiometrics.instance.authenticate();
                                                       if (!ok) return;
                                                     }
@@ -1300,7 +1280,6 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
     );
   }
 
-  // ── Export / Import sheets (unchanged) ───────────────────────
   void _showExportSheet(BuildContext ctx, GroveModel model, GroveSettings settings) {
     final json   = model.exportJson();
     final theme  = settings.theme;
@@ -1591,7 +1570,6 @@ class _AboutLinkTile extends StatelessWidget {
   );
 }
 
-// ── Layout toggle button ───────────────────────────────────────────────
 class _LayoutButton extends StatelessWidget {
   final String label; final IconData icon; final bool isSelected;
   final VoidCallback onTap; final GroveTheme theme;
@@ -1931,7 +1909,6 @@ class FractalTreePainter extends CustomPainter {
     return 1.0;
   }
 
-  // No dormancy fade — always use full baseColor
   Color get _activeColor => baseColor;
 
   Color get _barkColor {
@@ -2304,8 +2281,8 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
     _OnboardingStep(
       icon:       Icons.waving_hand_rounded,
       title:      'Welcome to Grove 🌿',
-      body:       'Hi there! Grove is a mindful habit tracker that turns your clean streaks into living, growing trees. '
-    'No gamification gimmicks; just a beautiful, private record of your progress.',
+      body:       'Yo! Grove is a mindful, minimalistic habit tracker that turns your clean streaks into living, growing, animated trees. '
+    'No secret tricks or gimmicks; just a beautiful & private record of your progress.',
     treeStage:  GrowthStage.seed,
     treeColor:  GroveTheme.mossGreen,
     ),
@@ -2313,7 +2290,7 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
       icon:       Icons.forest_rounded,
       title:      'Plant a Tree',
       body:       'Tap "Plant a Tree" to create a new habit. Give it a name (Alcohol, Smoking, Social Media; '
-    'anything you want to track) then pick a colour. Each habit grows its own unique tree.',
+    'anything you want to track) then pick a colour. Each habit grows its own unique tree and has a special identifer.',
     treeStage:  GrowthStage.sprout,
     treeColor:  GroveTheme.mossGreen,
     ),
@@ -2321,15 +2298,15 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
       icon:       Icons.show_chart_rounded,
       title:      'Watch It Grow',
       body:       'Your tree evolves through five stages: Seed → Sprout → Sapling → Young Tree → Grove Tree. '
-    'The longer your streak, the fuller and more complex your tree is.',
+    'The longer you maintain your streak, the fuller and more complex your tree grows.',
     treeStage:  GrowthStage.youngTree,
     treeColor:  GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:       Icons.refresh_rounded,
       title:      'Log a Relapse',
-      body:       'Slipped up? That\'s okay. Tap "Relapse" to honestly log what happened. '
-    'Grove records your peak streak so that way, your best efforts are never forgotten.',
+      body:       'Slipped up? That\'s okay. Tap "Relapse" to log what happened. '
+    'Grove records your peak streak so that way, your best efforts are not forgotten.',
     treeStage:  GrowthStage.sapling,
     treeColor:  GroveTheme.clayRed,
     ),
@@ -2344,7 +2321,7 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
     _OnboardingStep(
       icon:       Icons.lock_outline_rounded,
       title:      'Fully Private',
-      body:       'All your data lives only on this device. Nothing is sent anywhere. '
+      body:       'All your data lives only on this device. Nothing is ever sent anywhere. '
     'Use Export / Import in Settings to back up or move between devices. '
     'Ready? Let\'s start growing.',
     treeStage:  GrowthStage.groveTree,
@@ -2368,7 +2345,6 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag handle
           Container(
             width: 36, height: 4,
             decoration: BoxDecoration(
@@ -2377,9 +2353,6 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
             ),
           ),
           const SizedBox(height: 28),
-          // Animated tree preview — hidden on welcome slide (page 0 has no image).
-          // We build a temporary HabitTree so AnimatedTreeWidget can drive the
-          // wind animation and give CustomPaint a real canvas size.
           if (_page != 0) ...[
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
@@ -2642,8 +2615,6 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   );
 
   Widget _treeHero(HabitTree habit) {
-    // Pick a canvas size that grows with the stage, but cap the visible
-    // container height so it never dominates the screen.
     final treeCanvas = switch (habit.stage) {
       GrowthStage.groveTree => 260.0,
       GrowthStage.youngTree => 220.0,
@@ -2654,7 +2625,6 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
 
     return SizedBox(
       height: containerHeight,
-      // ClipRect prevents branches from overflowing horizontally on big trees.
       child: ClipRect(
         child: Center(
           child: Padding(
@@ -2663,8 +2633,6 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
               tag: 'tree_${habit.id}',
               child: Material(
                 color: Colors.transparent,
-                // FittedBox scales the tree down if treeCanvas > available width,
-                // keeping all branches visible without horizontal scroll/overflow.
                 child: FittedBox(
                   fit: BoxFit.contain,
                   child: SizedBox(
@@ -3239,7 +3207,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// §11 RELAPSE DIALOG  (unchanged)
+// §11 RELAPSE DIALOG
 // ══════════════════════════════════════════════════════════════════════
 class RelapseDialog extends StatefulWidget {
   final String habitName;

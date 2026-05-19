@@ -1,6 +1,6 @@
 // ╔═══════════════════════════════════════════════════════════════╗
-// ║ G R O V E v0.5.5                                              ║
-// ║ – Experimental Android Widget suppourt                        ║
+// ║ G R O V E v0.5.6                                              ║
+// ║ – Android Widget suppourt                                     ║
 // ║ – Split apks for optimization and file sieze                  ║
 // ║ – Preperation for fdroid release                              ║
 // ║ – Preperation for izzyondroid release                         ║
@@ -908,7 +908,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                       fontSize: 24, fontWeight: FontWeight.w800,
                       color: theme.textPrimary, letterSpacing: 1,
                     )),
-                    Text('v0.5.5 • Open Source',
+                    Text('v0.5.6 • Open Source',
                          style: TextStyle(fontSize: 12, color: theme.textSecondary)),
                   ],
                 ),

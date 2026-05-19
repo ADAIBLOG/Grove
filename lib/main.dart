@@ -96,7 +96,7 @@ class GroveNotifications {
 
     await _plugin.zonedSchedule(
       id:                      _notifId,
-      title:                   'Your forest is waiting 🌲',
+      title:                   'Your forest is waiting 🌲.',
       body:                    'It has grown since you last visited...',
       scheduledDate:           target,
       notificationDetails:     details,

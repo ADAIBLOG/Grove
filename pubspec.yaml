@@ -1,10 +1,11 @@
 name: grove
-description: "Minimalist fractal habit tracker."
+description: "Visualize your growth."
 publish_to: 'none'
 version: 0.5.5+3
 
 environment:
-  sdk: ^3.11.4
+  sdk: ">=3.11.4 <4.0.0"
+  flutter: "3.41.2"
 
 dependencies:
   flutter:

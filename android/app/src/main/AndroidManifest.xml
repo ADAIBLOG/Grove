@@ -35,6 +35,16 @@
             </intent-filter>
         </activity>
 
+        <!-- ── Grove Habit Picker (widget configuration) ─────────────────── -->
+        <activity
+            android:name=".HabitPickerActivity"
+            android:exported="true"
+            android:theme="@style/NormalTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+
         <!-- flutter_local_notifications: fires while app is closed -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
@@ -64,39 +74,39 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/calendar_widget_info" />
-            </receiver>
+        </receiver>
 
-            <!-- ── Grove Tree Widget ──────────────────────────────────────── -->
-            <receiver
-                android:name=".TreeWidgetProvider"
-                android:exported="true">
-                <intent-filter>
-                    <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                    <action android:name="com.resurrect.grove.ACTION_TREE_PICK_HABIT" />
-                </intent-filter>
-                <meta-data
-                    android:name="android.appwidget.provider"
-                    android:resource="@xml/tree_widget_info" />
-                </receiver>
+        <!-- ── Grove Tree Widget ──────────────────────────────────────── -->
+        <receiver
+            android:name=".TreeWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.resurrect.grove.ACTION_TREE_PICK_HABIT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/tree_widget_info" />
+        </receiver>
 
-                <meta-data
-                    android:name="flutterEmbedding"
-                    android:value="2" />
-                </application>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
 
-                <queries>
-                    <intent>
-                        <action android:name="android.intent.action.VIEW" />
-                        <data android:scheme="https" />
-                    </intent>
-                    <intent>
-                        <action android:name="android.intent.action.VIEW" />
-                        <data android:scheme="http" />
-                    </intent>
-                    <intent>
-                        <action android:name="android.intent.action.PROCESS_TEXT"/>
-                        <data android:mimeType="text/plain"/>
-                    </intent>
-                </queries>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
 
-            </manifest>
+</manifest>

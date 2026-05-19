@@ -3,6 +3,7 @@ package com.resurrect.grove
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -20,8 +21,9 @@ class TreeWidgetProvider : AppWidgetProvider() {
     companion object {
         const val ACTION_PICK_HABIT = "com.resurrect.grove.ACTION_TREE_PICK_HABIT"
         const val PREFS_NAME        = "FlutterSharedPreferences"
+        const val NAV_PREFS         = "grove_widget_nav"
         const val KEY_HABITS        = "flutter.grove_v2_ids"
-        const val KEY_TREE_HABIT    = "grove_widget_tree_habit_id"
+        // Per-widget habit key: "tree_habit_id_$widgetId"  (written by HabitPickerActivity too)
     }
 
     override fun onUpdate(ctx: Context, mgr: AppWidgetManager, ids: IntArray) {
@@ -32,26 +34,31 @@ class TreeWidgetProvider : AppWidgetProvider() {
         super.onReceive(ctx, intent)
         if (intent.action != ACTION_PICK_HABIT) return
 
+            val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                              AppWidgetManager.INVALID_APPWIDGET_ID)
+
             val prefs    = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val navPrefs = ctx.getSharedPreferences("grove_widget_nav", Context.MODE_PRIVATE)
+            val navPrefs = ctx.getSharedPreferences(NAV_PREFS, Context.MODE_PRIVATE)
             val habits   = loadHabitIds(prefs)
-            val curId    = navPrefs.getString(KEY_TREE_HABIT, null)
+            val key      = "tree_habit_id_$widgetId"
+            val curId    = navPrefs.getString(key, null)
             val idx      = habits.indexOf(curId)
             val nextId   = if (habits.isEmpty()) null else habits[(idx + 1) % habits.size]
-            navPrefs.edit().putString(KEY_TREE_HABIT, nextId).apply()
+            navPrefs.edit().putString(key, nextId).apply()
 
             val mgr    = AppWidgetManager.getInstance(ctx)
             val allIds = mgr.getAppWidgetIds(
-                android.content.ComponentName(ctx, TreeWidgetProvider::class.java))
+                ComponentName(ctx, TreeWidgetProvider::class.java))
             allIds.forEach { updateWidget(ctx, mgr, it) }
     }
 
     private fun updateWidget(ctx: Context, mgr: AppWidgetManager, widgetId: Int) {
         val flutterPrefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val navPrefs     = ctx.getSharedPreferences("grove_widget_nav", Context.MODE_PRIVATE)
+        val navPrefs     = ctx.getSharedPreferences(NAV_PREFS, Context.MODE_PRIVATE)
 
         val habitIds = loadHabitIds(flutterPrefs)
-        val selId    = navPrefs.getString(KEY_TREE_HABIT, habitIds.firstOrNull())
+        // Per-widget key — written by HabitPickerActivity on first placement / reconfigure
+        val selId    = navPrefs.getString("tree_habit_id_$widgetId", habitIds.firstOrNull())
         val habit    = selId?.let { loadHabit(flutterPrefs, it) }
 
         val views = RemoteViews(ctx.packageName, R.layout.widget_tree)

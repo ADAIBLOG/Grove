@@ -511,7 +511,7 @@ class GroveModel extends ChangeNotifier {
     try {
       await _prefs!.setStringList(_idsKey, _habits.map((h) => h.id).toList());
       for (final h in _habits) { await _prefs!.setString(h.id, h.toJson()); }
-      await GroveWidgetBridge.instance.requestUpdate();
+      await GroveWidgetBridge.instance.renderAndUpdate(_habits);
     } catch (e) { debugPrint('Persist error: $e'); }
   }
 

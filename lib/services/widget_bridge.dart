@@ -56,13 +56,12 @@ class GroveWidgetBridge {
         windPhase:   0,
         daysElapsed: habit.daysElapsed,
         geneticSeed: habit.geneticSeed,
-        shadowStage: habit.shadowStage,
       );
 
       painter.paint(canvas, size);
 
-      final picture = recorder.endRecording();
-      final image   = await picture.toImage(size.width.toInt(), size.height.toInt());
+      final picture  = recorder.endRecording();
+      final image    = await picture.toImage(size.width.toInt(), size.height.toInt());
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     } catch (e) {

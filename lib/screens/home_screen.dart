@@ -49,6 +49,10 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
     final settings = context.watch<GroveSettings>();
     final theme    = settings.theme;
 
+    if (habits.isNotEmpty && _selectedIdx >= habits.length) {
+      _selectedIdx = habits.length - 1;
+    }
+
     return Scaffold(
       backgroundColor:        theme.bg,
       extendBodyBehindAppBar: true,
@@ -516,7 +520,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Exports all trees, relapse history, and streak records.\nImporting will replace your current grove — back up first.',
+                  'Exports all trees, relapse history, and streak records.\nImporting will replace your current grove — back up is recommend.',
                   style:     TextStyle(fontSize: 10, color: settings.theme.textMuted, height: 1.5),
                   textAlign: TextAlign.center,
                 ),

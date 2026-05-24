@@ -33,7 +33,6 @@ with SingleTickerProviderStateMixin {
         windPhase:   _windController.value * 2 * math.pi,
         daysElapsed: widget.habit.daysElapsed,
         geneticSeed: widget.habit.geneticSeed,
-        shadowStage: widget.habit.shadowStage,
       ),
     ),
   );

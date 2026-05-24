@@ -157,7 +157,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                       fontSize: 24, fontWeight: FontWeight.w800,
                       color: theme.textPrimary, letterSpacing: 1,
                     )),
-                    Text('v0.5.6 • Open Source',
+                    Text('v0.5.8 • Open Source',
                          style: TextStyle(fontSize: 12, color: theme.textSecondary)),
                   ],
                 ),

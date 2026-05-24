@@ -58,8 +58,11 @@ class HabitTree {
   final Color              color;
   final DateTime           startDate;
   DateTime                 lastReset;
-  final List<RelapseEvent> relapses;
-  final int                geneticSeed;
+  final List<RelapseEvent> _relapses;
+
+  List<RelapseEvent> get relapses => _relapses;
+
+  final int geneticSeed;
 
   HabitTree({
     required this.id,
@@ -69,21 +72,21 @@ class HabitTree {
     required this.lastReset,
     List<RelapseEvent>? relapses,
     int? geneticSeed,
-  })  : relapses    = relapses ?? [],
+  })  : _relapses   = relapses != null ? List<RelapseEvent>.of(relapses) : [],
   geneticSeed = geneticSeed ?? id.hashCode;
 
   int         get daysElapsed => DateTime.now().difference(lastReset).inDays;
   int         get totalDays   => DateTime.now().difference(startDate).inDays;
   GrowthStage get stage       => stageFromDays(daysElapsed);
 
-  int get peakDays => relapses.isEmpty
+  int get peakDays => _relapses.isEmpty
   ? daysElapsed
-  : math.max(daysElapsed, relapses.map((e) => e.peakDays).reduce(math.max));
+  : math.max(daysElapsed, _relapses.map((e) => e.peakDays).reduce(math.max));
 
   GrowthStage? get shadowStage {
-    if (relapses.isEmpty) return null;
-    if (daysElapsed < 8)  return null;
-    final peak = relapses.first.peakDays;
+    if (_relapses.isEmpty) return null;
+    if (daysElapsed < 8)   return null;
+    final peak = _relapses.first.peakDays;
     if (peak <= daysElapsed) return null;
     return stageFromDays(peak);
   }
@@ -97,7 +100,7 @@ class HabitTree {
     return 1.0;
   }
 
-  Set<DateTime> get relapseDays => relapses
+  Set<DateTime> get relapseDays => _relapses
   .map((e) => DateTime(e.timestamp.year, e.timestamp.month, e.timestamp.day))
   .toSet();
 
@@ -107,7 +110,7 @@ class HabitTree {
     'color':       color.toARGB32(),
     'startDate':   startDate.toIso8601String(),
     'lastReset':   lastReset.toIso8601String(),
-    'relapses':    relapses.map((r) => r.toMap()).toList(),
+    'relapses':    _relapses.map((r) => r.toMap()).toList(),
     'geneticSeed': geneticSeed,
   };
 
@@ -128,13 +131,22 @@ class HabitTree {
   factory HabitTree.fromJson(String s) =>
   HabitTree.fromMap(jsonDecode(s) as Map<String, dynamic>);
 
-  HabitTree copyWith() => HabitTree(
-    id:          id,
-    name:        name,
-    color:       color,
-    startDate:   startDate,
-    lastReset:   lastReset,
-    relapses:    relapses,
-    geneticSeed: geneticSeed,
+  HabitTree copyWith({
+    String?             id,
+    String?             name,
+    Color?              color,
+    DateTime?           startDate,
+    DateTime?           lastReset,
+    List<RelapseEvent>? relapses,
+    int?                geneticSeed,
+  }) =>
+  HabitTree(
+    id:          id          ?? this.id,
+    name:        name        ?? this.name,
+    color:       color       ?? this.color,
+    startDate:   startDate   ?? this.startDate,
+    lastReset:   lastReset   ?? this.lastReset,
+    relapses:    relapses    ?? List<RelapseEvent>.of(_relapses),
+    geneticSeed: geneticSeed ?? this.geneticSeed,
   );
 }

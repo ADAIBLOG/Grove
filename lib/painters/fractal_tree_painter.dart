@@ -4,37 +4,24 @@ import 'package:grove/models/grove_models.dart';
 import 'package:grove/theme/grove_theme.dart';
 
 class FractalTreePainter extends CustomPainter {
-  final GrowthStage  stage;
-  final Color        baseColor;
-  final double       progress;
-  final double       windPhase;
-  final int          daysElapsed;
-  final int          geneticSeed;
-  final GrowthStage? shadowStage;
+  final GrowthStage stage;
+  final Color       baseColor;
+  final double      progress;
+  final double      windPhase;
+  final int         daysElapsed;
+  final int         geneticSeed;
 
   const FractalTreePainter({
     required this.stage,
     required this.baseColor,
     required this.progress,
-    this.windPhase    = 0,
-    this.daysElapsed  = 0,
-    this.geneticSeed  = 0,
-    this.shadowStage,
+    this.windPhase   = 0,
+    this.daysElapsed = 0,
+    this.geneticSeed = 0,
   });
 
   int get _maxDepth {
     switch (stage) {
-      case GrowthStage.seed:      return 0;
-      case GrowthStage.sprout:    return 2;
-      case GrowthStage.sapling:   return 3;
-      case GrowthStage.youngTree: return 4;
-      case GrowthStage.groveTree: return 5;
-    }
-  }
-
-  int get _shadowDepth {
-    if (shadowStage == null) return 0;
-    switch (shadowStage!) {
       case GrowthStage.seed:      return 0;
       case GrowthStage.sprout:    return 2;
       case GrowthStage.sapling:   return 3;
@@ -87,12 +74,8 @@ class FractalTreePainter extends CustomPainter {
     if (stage == GrowthStage.groveTree || (stage == GrowthStage.youngTree && progress > 0.6)) {
       _drawAmbientSpores(canvas, size);
     }
-    if (shadowStage != null && _shadowDepth > _maxDepth) {
-      _drawTree(canvas: canvas, size: size,
-                color: GroveTheme.slateGrey.withValues(alpha: 0.08), maxDepth: _shadowDepth, isShadow: true);
-    }
     if (stage == GrowthStage.seed) { _drawSeed(canvas, size); return; }
-    _drawTree(canvas: canvas, size: size, color: _activeColor, maxDepth: _maxDepth, isShadow: false);
+    _drawTree(canvas: canvas, size: size, color: _activeColor, maxDepth: _maxDepth);
   }
 
   void _drawAmbientSpores(Canvas canvas, Size size) {
@@ -116,7 +99,7 @@ class FractalTreePainter extends CustomPainter {
   }
 
   void _drawTree({required Canvas canvas, required Size size,
-    required Color color, required int maxDepth, required bool isShadow}) {
+    required Color color, required int maxDepth}) {
     final gx       = size.width  * 0.5;
     final gy       = size.height * 0.93;
     final trunkLen = size.height * _lerpD(0.28, 0.44, progress);
@@ -124,14 +107,14 @@ class FractalTreePainter extends CustomPainter {
     final lenRatio = _lerpD(0.66, 0.73, progress) * (1.0 + _genetic('ratio'));
     final trunkW   = _lerpD(5.0, 9.0, progress);
 
-    if (!isShadow && maxDepth >= 2) {
+    if (maxDepth >= 2) {
       _drawRootFlare(canvas, Offset(gx, gy), trunkW, color);
     }
     _drawBranch(
       canvas: canvas, start: Offset(gx, gy),
       angle: -math.pi / 2, length: trunkLen, depth: maxDepth, maxDepth: maxDepth,
       spreadAngle: spread, lengthRatio: lenRatio, strokeWidth: trunkW,
-      depthFromTip: maxDepth, color: color, isShadow: isShadow, isMainTrunk: true,
+      depthFromTip: maxDepth, color: color, isMainTrunk: true,
     );
     }
 
@@ -162,10 +145,10 @@ class FractalTreePainter extends CustomPainter {
       required int depth, required int maxDepth,
       required double spreadAngle, required double lengthRatio,
       required double strokeWidth, required int depthFromTip,
-      required Color color, required bool isShadow, bool isMainTrunk = false,
+      required Color color, bool isMainTrunk = false,
     }) {
       double windOffset = 0;
-      if (!isShadow && depthFromTip <= 3 && windPhase > 0) {
+      if (depthFromTip <= 3 && windPhase > 0) {
         final windStrength = (1.0 - depthFromTip / 4.0) * 0.045;
         windOffset = math.sin(windPhase + depthFromTip * 0.9 + _genetic('wind') * math.pi) * windStrength;
       }
@@ -178,28 +161,22 @@ class FractalTreePainter extends CustomPainter {
       final branchOpacity = _lerpD(0.60, 0.98, depthRatio);
       final barkC         = _barkColor;
 
-      if (!isShadow) {
-        if (strokeWidth > 1.5) {
-          canvas.drawLine(start, tip, Paint()
-          ..color = barkC.withValues(alpha: branchOpacity * 0.55)
-          ..strokeWidth = strokeWidth..strokeCap = StrokeCap.round..style = PaintingStyle.stroke);
-          canvas.drawLine(start, tip, Paint()
-          ..color = color.withValues(alpha: branchOpacity * 0.80)
-          ..strokeWidth = strokeWidth * 0.70..strokeCap = StrokeCap.round..style = PaintingStyle.stroke);
-          canvas.drawLine(
-            start.translate(math.cos(adjustedAngle + math.pi / 2) * strokeWidth * 0.18,
-            math.sin(adjustedAngle + math.pi / 2) * strokeWidth * 0.18),
-            tip.translate(  math.cos(adjustedAngle + math.pi / 2) * strokeWidth * 0.10,
-            math.sin(adjustedAngle + math.pi / 2) * strokeWidth * 0.10),
-            Paint()..color = color.withValues(alpha: branchOpacity * 0.35)
-            ..strokeWidth = strokeWidth * 0.22..strokeCap = StrokeCap.round..style = PaintingStyle.stroke,
-          );
-          if (strokeWidth > 3.5) _drawBarkNicks(canvas, start, tip, strokeWidth, color, branchOpacity);
-        } else {
-          canvas.drawLine(start, tip, Paint()
-          ..color = color.withValues(alpha: branchOpacity)
-          ..strokeWidth = strokeWidth..strokeCap = StrokeCap.round..style = PaintingStyle.stroke);
-        }
+      if (strokeWidth > 1.5) {
+        canvas.drawLine(start, tip, Paint()
+        ..color = barkC.withValues(alpha: branchOpacity * 0.55)
+        ..strokeWidth = strokeWidth..strokeCap = StrokeCap.round..style = PaintingStyle.stroke);
+        canvas.drawLine(start, tip, Paint()
+        ..color = color.withValues(alpha: branchOpacity * 0.80)
+        ..strokeWidth = strokeWidth * 0.70..strokeCap = StrokeCap.round..style = PaintingStyle.stroke);
+        canvas.drawLine(
+          start.translate(math.cos(adjustedAngle + math.pi / 2) * strokeWidth * 0.18,
+          math.sin(adjustedAngle + math.pi / 2) * strokeWidth * 0.18),
+          tip.translate(  math.cos(adjustedAngle + math.pi / 2) * strokeWidth * 0.10,
+          math.sin(adjustedAngle + math.pi / 2) * strokeWidth * 0.10),
+          Paint()..color = color.withValues(alpha: branchOpacity * 0.35)
+          ..strokeWidth = strokeWidth * 0.22..strokeCap = StrokeCap.round..style = PaintingStyle.stroke,
+        );
+        if (strokeWidth > 3.5) _drawBarkNicks(canvas, start, tip, strokeWidth, color, branchOpacity);
       } else {
         canvas.drawLine(start, tip, Paint()
         ..color = color.withValues(alpha: branchOpacity)
@@ -207,7 +184,7 @@ class FractalTreePainter extends CustomPainter {
       }
 
       if (depth == 0) {
-        if (!isShadow) _drawLeafCluster(canvas, tip, length, adjustedAngle, color);
+        _drawLeafCluster(canvas, tip, length, adjustedAngle, color);
         return;
       }
 
@@ -218,17 +195,17 @@ class FractalTreePainter extends CustomPainter {
       _drawBranch(canvas: canvas, start: tip, angle: adjustedAngle - spreadAngle,
                   length: childLen * (1.0 - asym), depth: depth - 1, maxDepth: maxDepth,
                   spreadAngle: spreadAngle * 0.90, lengthRatio: lengthRatio, strokeWidth: childWidth,
-                  depthFromTip: depthFromTip - 1, color: color, isShadow: isShadow);
+                  depthFromTip: depthFromTip - 1, color: color);
       _drawBranch(canvas: canvas, start: tip, angle: adjustedAngle + spreadAngle,
                   length: childLen * (1.0 + asym), depth: depth - 1, maxDepth: maxDepth,
                   spreadAngle: spreadAngle * 0.90, lengthRatio: lengthRatio, strokeWidth: childWidth,
-                  depthFromTip: depthFromTip - 1, color: color, isShadow: isShadow);
+                  depthFromTip: depthFromTip - 1, color: color);
 
       if (maxDepth >= 4 && depth == maxDepth - 1) {
         _drawBranch(canvas: canvas, start: tip, angle: adjustedAngle + _genetic('mid_$depth') * 0.3,
         length: childLen * 0.75, depth: depth - 2, maxDepth: maxDepth,
         spreadAngle: spreadAngle * 0.82, lengthRatio: lengthRatio, strokeWidth: childWidth * 0.75,
-        depthFromTip: depthFromTip - 2, color: color, isShadow: isShadow);
+        depthFromTip: depthFromTip - 2, color: color);
       }
     }
 
@@ -270,8 +247,8 @@ class FractalTreePainter extends CustomPainter {
                               GrowthStage.groveTree => 0.10,
                               _                     => 0.30,
                             };
-                            final leafSize  = base * (stageSizeBoost + rng.nextDouble() * 0.26 + _leafDensity * 0.12);
-                            final rotation  = branchAngle + angleOff * 0.6 + rng.nextDouble() * 0.4;
+                            final leafSize   = base * (stageSizeBoost + rng.nextDouble() * 0.26 + _leafDensity * 0.12);
+                            final rotation   = branchAngle + angleOff * 0.6 + rng.nextDouble() * 0.4;
                             final distFactor = 1.0 - (distOff / (base * 0.75)).clamp(0.0, 0.5);
                             final leafOpacity = (0.55 + _leafDensity * 0.35) * distFactor;
                             _drawSingleLeaf(canvas, Offset(lx, ly), leafSize, rotation, lc, lh, leafOpacity);
@@ -398,8 +375,7 @@ class FractalTreePainter extends CustomPainter {
 
                                                                    @override
                                                                    bool shouldRepaint(FractalTreePainter old) =>
-                                                                   old.stage       != stage       || old.baseColor != baseColor ||
-                                                                   old.progress    != progress    || old.windPhase != windPhase ||
-                                                                   old.daysElapsed != daysElapsed || old.geneticSeed != geneticSeed ||
-                                                                   old.shadowStage != shadowStage;
+                                                                   old.stage       != stage       || old.baseColor  != baseColor  ||
+                                                                   old.progress    != progress    || old.windPhase  != windPhase  ||
+                                                                   old.daysElapsed != daysElapsed || old.geneticSeed != geneticSeed;
 }

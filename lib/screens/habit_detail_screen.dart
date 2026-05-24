@@ -151,37 +151,38 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   );
 
   Widget _treeHero(HabitTree habit) {
-    final treeCanvas = switch (habit.stage) {
-      GrowthStage.groveTree => 260.0,
-      GrowthStage.youngTree => 220.0,
-      GrowthStage.sapling   => 190.0,
-      _                     => 170.0,
-    };
-    const containerHeight = 220.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = switch (habit.stage) {
+          GrowthStage.groveTree => constraints.maxWidth * 0.72,
+          GrowthStage.youngTree => constraints.maxWidth * 0.65,
+          GrowthStage.sapling   => constraints.maxWidth * 0.58,
+          _                     => constraints.maxWidth * 0.50,
+        };
 
-    return SizedBox(
-      height: containerHeight,
-      child: ClipRect(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Hero(
-              tag: 'tree_${habit.id}',
-              child: Material(
-                color: Colors.transparent,
-                child: FittedBox(
-                  fit: BoxFit.contain,
+        final overflow = size * 0.20;
+        return SizedBox(
+          height: size + overflow,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: OverflowBox(
+              maxWidth:  size * 1.15,
+              maxHeight: size + overflow,
+              alignment: Alignment.bottomCenter,
+              child: Hero(
+                tag: 'tree_${habit.id}',
+                child: Material(
+                  color: Colors.transparent,
                   child: SizedBox(
-                    width:  treeCanvas,
-                    height: treeCanvas,
-                    child:  AnimatedTreeWidget(habit: habit),
+                    width: size, height: size,
+                    child: AnimatedTreeWidget(habit: habit),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

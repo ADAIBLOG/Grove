@@ -25,8 +25,9 @@ class MonthlyCalendar extends StatelessWidget {
     final firstWeekday   = targetMonth.weekday;
     final startOffset    = firstWeekday - 1;
     const dayLabels      = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    final totalCells     = startOffset + daysInMonth;
-    final numWeeks       = (totalCells / 7).ceil();
+    final totalCells      = startOffset + daysInMonth;
+    final numWeeks        = (totalCells / 7).ceil();
+    final daysInPrevMonth = DateTime(targetMonth.year, targetMonth.month, 0).day;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -46,7 +47,22 @@ class MonthlyCalendar extends StatelessWidget {
                                      child: Row(children: List.generate(7, (dayIndex) {
                                        final cellIndex = weekIndex * 7 + dayIndex;
                                        if (cellIndex < startOffset || cellIndex >= startOffset + daysInMonth) {
-                                         return const Expanded(child: SizedBox());
+                                         final overflowDay = cellIndex < startOffset
+                                         ? daysInPrevMonth - (startOffset - cellIndex - 1)
+                                         : cellIndex - (startOffset + daysInMonth) + 1;
+                                         return Expanded(
+                                           child: Container(
+                                             margin: const EdgeInsets.all(2),
+                                             decoration: BoxDecoration(
+                                               color: theme.surfaceHigh.withValues(alpha: 0.15),
+                                               borderRadius: BorderRadius.circular(8)),
+                                               alignment: Alignment.center,
+                                               child: Text('$overflowDay', style: TextStyle(
+                                                 fontSize: 11,
+                                                 fontWeight: FontWeight.w400,
+                                                 color: theme.textMuted.withValues(alpha: 0.35))),
+                                           ),
+                                         );
                                        }
                                        final day        = cellIndex - startOffset + 1;
                                        final cellDate   = DateTime(targetMonth.year, targetMonth.month, day);

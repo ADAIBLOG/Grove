@@ -4,7 +4,7 @@
 <h1 align="center">Grove</h1>
 <h2 align="center">Visualize your growth.</h2>
 
-Grow the life you want. **Grove** helps you nurture your bad habits, track your consistency, and visualize the progress through procedurally generated fractal trees that thrive as you do. Whether you're building new habits or want a way to visualize your daily growth, **Grove** gives you a minimalist & private space to flourish(get it flourish? trees? lol).
+Whether you're maintaining sobriety, breaking harmful habits, or building positive routines, **Grove** helps you stay focused on consistent progress. Watch your streaks grow, track meaningful milestones, and cultivate a forest of procedurally generated fractal trees that evolve alongside your journey. Every day of progress helps something beautiful take root.
 
 <p align="center">
 <img width="200" src="https://github.com/resurrectdev1/Grove/blob/main/assets/screenshot_1.png">

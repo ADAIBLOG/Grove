@@ -142,6 +142,12 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                     }
                 }
 
+                val needsSixRows = (firstDow + daysInMonth) > 35
+                views.setViewVisibility(
+                    R.id.cal_row5,
+                    if (needsSixRows) android.view.View.VISIBLE else android.view.View.GONE
+                )
+
                 views.setOnClickPendingIntent(R.id.cal_btn_prev,
                                               makeBroadcast(ctx, ACTION_PREV_MONTH, widgetId, widgetId * 10 + 1))
                 views.setOnClickPendingIntent(R.id.cal_btn_next,

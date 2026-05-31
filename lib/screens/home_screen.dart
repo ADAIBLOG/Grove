@@ -1,9 +1,10 @@
-import 'dart:math' as math;
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:grove/models/grove_models.dart';
 import 'package:grove/painters/fractal_tree_painter.dart';
 import 'package:grove/providers/grove_model.dart';
@@ -477,6 +478,10 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                                           value:    settings.biometricUnlock,
                                           onChanged: (val) async {
                                             HapticFeedback.selectionClick();
+                                            if (val) {
+                                              final ok = await GroveBiometrics.instance.authenticate();
+                                              if (!ok) return;
+                                            }
                                             await settings.setBiometricUnlock(val);
                                           },
                     );
@@ -513,7 +518,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Exports all trees, relapse history, and streak records.\nImporting will replace your current grove • back up is recommend.',
+                  'Export saves a .json file to a location you choose.\nImporting will replace your current grove • export a backup first.',
                   style:     TextStyle(fontSize: 10, color: settings.theme.textMuted, height: 1.5),
                   textAlign: TextAlign.center,
                 ),
@@ -524,230 +529,85 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
     );
   }
 
-  void _showExportSheet(BuildContext ctx, GroveModel model, GroveSettings settings) {
-    final json   = model.exportJson();
-    final theme  = settings.theme;
-    final copied = ValueNotifier<bool>(false);
+  Future<void> _showExportSheet(BuildContext ctx, GroveModel model, GroveSettings settings) async {
+    final json      = model.exportJson();
+    final theme     = settings.theme;
+    final fileName  = 'Grove_backup_${DateFormat("yyyy-MM-dd").format(DateTime.now())}.json';
+    final bytes     = Uint8List.fromList(json.codeUnits);
+    final messenger = ScaffoldMessenger.of(ctx);
 
-    showModalBottomSheet(
-      context: ctx, backgroundColor: theme.surfaceHigh,
-      isScrollControlled: true, useSafeArea: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (sheetCtx) => Padding(
-        padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(sheetCtx).padding.bottom),
-        child: Column(
-          mainAxisSize:       MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(child: Container(
-              width: 36, height: 4,
-              decoration: BoxDecoration(
-                color:        theme.textMuted.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            )),
-            const SizedBox(height: 20),
-            Row(children: [
-              Container(
-                width: 40, height: 40,
-                decoration: BoxDecoration(
-                  color:        theme.primary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.upload_outlined, color: theme.primary, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Grove Backup', style: TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.w700, color: theme.textPrimary)),
-                  Text(
-                    '${model.habits.length} tree${model.habits.length != 1 ? 's' : ''} · ${DateFormat('MMM d, yyyy').format(DateTime.now())}',
-                    style: TextStyle(fontSize: 12, color: theme.textSecondary),
-                  ),
-              ])),
-            ]),
-            const SizedBox(height: 20),
-            Container(
-              height: 140, padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color:        theme.surface,
-                borderRadius: BorderRadius.circular(14),
-                border:       Border.all(color: theme.textMuted.withValues(alpha: 0.2)),
-              ),
-              child: SingleChildScrollView(
-                child: SelectableText(json,
-                                      style: TextStyle(fontFamily: 'monospace', fontSize: 11,
-                                                       color: theme.textSecondary, height: 1.5)),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text('${json.length} characters · Select all to copy manually',
-                 style: TextStyle(fontSize: 10, color: theme.textMuted),
-                 textAlign: TextAlign.center),
-                 const SizedBox(height: 20),
-                 ValueListenableBuilder<bool>(
-                   valueListenable: copied,
-                   builder: (_, isCopied, _) => FilledButton.icon(
-                     onPressed: () async {
-                       await Clipboard.setData(ClipboardData(text: json));
-                       copied.value = true;
-                       HapticFeedback.lightImpact();
-                       Future.delayed(const Duration(seconds: 3), () => copied.value = false);
-                     },
-                     icon:  Icon(isCopied ? Icons.check_rounded : Icons.copy_rounded, size: 18),
-                     label: Text(isCopied ? 'Copied to Clipboard!' : 'Copy to Clipboard',
-                                 style: const TextStyle(fontWeight: FontWeight.w600)),
-                                 style: FilledButton.styleFrom(
-                                   backgroundColor: isCopied ? GroveTheme.mossGreen : theme.primary,
-                                   minimumSize: const Size.fromHeight(52),
-                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                 ),
-                   ),
-                 ),
-          ],
-        ),
-      ),
+    final String? outputPath = await FilePicker.platform.saveFile(
+      dialogTitle:       'Save Grove Backup',
+      fileName:          fileName,
+      type:              FileType.custom,
+      allowedExtensions: ['json'],
+      bytes:             bytes,
     );
+
+    if (outputPath != null) {
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        try {
+          await File(outputPath).writeAsString(json);
+        } catch (e) {
+          messenger.showSnackBar(SnackBar(
+            content:         Text('Save failed: $e'),
+            backgroundColor: GroveTheme.clayRed,
+            behavior:        SnackBarBehavior.floating,
+          ));
+          return;
+        }
+      }
+      HapticFeedback.lightImpact();
+      messenger.showSnackBar(SnackBar(
+        content:         const Text('✓ Backup saved'),
+        backgroundColor: theme.primary,
+        behavior:        SnackBarBehavior.floating,
+      ));
+    }
   }
 
-  void _showImportSheet(BuildContext ctx, GroveModel model, GroveSettings settings) {
-    final theme      = settings.theme;
-    final controller = TextEditingController();
-    final isPasting  = ValueNotifier<bool>(false);
+  Future<void> _showImportSheet(BuildContext ctx, GroveModel model, GroveSettings settings) async {
+    final theme     = settings.theme;
+    final messenger = ScaffoldMessenger.of(ctx);
 
-    showModalBottomSheet(
-      context: ctx, backgroundColor: theme.surfaceHigh,
-      isScrollControlled: true, useSafeArea: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (sheetCtx) => Padding(
-        padding: EdgeInsets.fromLTRB(24, 24, 24,
-                                     24 + math.max(MediaQuery.of(sheetCtx).viewInsets.bottom,
-                                     MediaQuery.of(sheetCtx).padding.bottom)),
-                                     child: Column(
-                                       mainAxisSize:       MainAxisSize.min,
-                                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                                       children: [
-                                         Center(child: Container(
-                                           width: 36, height: 4,
-                                           decoration: BoxDecoration(
-                                             color:        theme.textMuted.withValues(alpha: 0.4),
-                                             borderRadius: BorderRadius.circular(2),
-                                           ),
-                                         )),
-                                         const SizedBox(height: 20),
-                                         Row(children: [
-                                           Container(
-                                             width: 40, height: 40,
-                                             decoration: BoxDecoration(
-                                               color:        GroveTheme.barkBrown.withValues(alpha: 0.15),
-                                               borderRadius: BorderRadius.circular(12),
-                                             ),
-                                             child: const Icon(Icons.download_outlined, color: GroveTheme.barkBrown, size: 20),
-                                           ),
-                                           const SizedBox(width: 12),
-                                           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                             Text('Restore Grove', style: TextStyle(
-                                               fontSize: 17, fontWeight: FontWeight.w700, color: theme.textPrimary)),
-                                               Text('Paste your JSON backup below',
-                                                    style: TextStyle(fontSize: 12, color: theme.textSecondary)),
-                                           ])),
-                                         ]),
-                                         const SizedBox(height: 16),
-                                         Container(
-                                           padding: const EdgeInsets.all(12),
-                                           decoration: BoxDecoration(
-                                             color:        GroveTheme.clayRed.withValues(alpha: 0.08),
-                                             borderRadius: BorderRadius.circular(12),
-                                             border:       Border.all(color: GroveTheme.clayRed.withValues(alpha: 0.25)),
-                                           ),
-                                           child: Row(children: [
-                                             const Icon(Icons.warning_amber_rounded, size: 16, color: GroveTheme.clayRed),
-                                             const SizedBox(width: 8),
-                                             Expanded(child: Text(
-                                               'This will replace your current grove. Export a backup first if needed.',
-                                               style: TextStyle(fontSize: 11, color: theme.textSecondary, height: 1.4),
-                                             )),
-                                           ]),
-                                         ),
-                                         const SizedBox(height: 16),
-                                         OutlinedButton.icon(
-                                           onPressed: () async {
-                                             final data = await Clipboard.getData('text/plain');
-                                             if (data?.text != null) {
-                                               controller.text = data!.text!;
-                                               isPasting.value = true;
-                                               HapticFeedback.selectionClick();
-                                             }
-                                           },
-                                           icon:  const Icon(Icons.content_paste_rounded, size: 16),
-                                           label: const Text('Paste from Clipboard'),
-                                           style: OutlinedButton.styleFrom(
-                                             foregroundColor: theme.primary,
-                                               side:    BorderSide(color: theme.primary.withValues(alpha: 0.5)),
-                                               padding: const EdgeInsets.symmetric(vertical: 12),
-                                               shape:   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                           ),
-                                         ),
-                                         const SizedBox(height: 12),
-                                         ValueListenableBuilder<bool>(
-                                           valueListenable: isPasting,
-                                           builder: (_, hasPasted, _) => TextField(
-                                             controller: controller,
-                                             minLines:   hasPasted ? 4 : 2,
-                                             maxLines:   hasPasted ? 6 : 4,
-                                             style:      TextStyle(color: theme.textPrimary, fontSize: 12, fontFamily: 'monospace'),
-                                             onChanged:  (_) { if (!isPasting.value) isPasting.value = controller.text.isNotEmpty; },
-                                             decoration: InputDecoration(
-                                               hintText:  'Or type / paste your Grove JSON backup here…',
-                                               hintStyle: TextStyle(color: theme.textMuted, fontSize: 12),
-                                               contentPadding: const EdgeInsets.all(12),
-                                             ),
-                                           ),
-                                         ),
-                                         const SizedBox(height: 20),
-                                         FilledButton.icon(
-                                           onPressed: () async {
-                                             if (controller.text.trim().isEmpty) {
-                                               ScaffoldMessenger.of(sheetCtx).showSnackBar(const SnackBar(
-                                                 content:         Text('Nothing to import — paste your JSON first'),
-                                                 backgroundColor: GroveTheme.clayRed,
-                                                 behavior:        SnackBarBehavior.floating,
-                                               ));
-                                               return;
-                                             }
-                                             final success = await model.importFromJson(controller.text);
-                                             controller.dispose();
-                                             if (!sheetCtx.mounted) return;
-                                             Navigator.pop(sheetCtx);
-                                             Navigator.pop(sheetCtx);
-                                             if (ctx.mounted) {
-                                               ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-                                                 content: Text(success
-                                                 ? '✓ Grove restored — ${model.habits.length} trees loaded'
-                                                 : '✗ Invalid backup — check the JSON and try again'),
-                                                 backgroundColor: success ? theme.primary : GroveTheme.clayRed,
-                                                 behavior:        SnackBarBehavior.floating,
-                                               ));
-                                             }
-                                           },
-                                           icon:  const Icon(Icons.restore_rounded, size: 18),
-                                           label: const Text('Restore Grove', style: TextStyle(fontWeight: FontWeight.w600)),
-                                           style: FilledButton.styleFrom(
-                                             backgroundColor: GroveTheme.barkBrown,
-                                             minimumSize:     const Size.fromHeight(52),
-                                             shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                           ),
-                                         ),
-                                       ],
-                                     ),
-      ),
+    final result = await FilePicker.platform.pickFiles(
+      dialogTitle:       'Select Grove Backup',
+      type:              FileType.custom,
+      allowedExtensions: ['json'],
+      withData:          true,
     );
-  }
 
+    if (result == null || result.files.isEmpty) return;
+
+    final fileBytes = result.files.first.bytes;
+    final filePath  = result.files.first.path;
+
+    String? raw;
+    if (fileBytes != null) {
+      raw = String.fromCharCodes(fileBytes);
+    } else if (filePath != null) {
+      raw = await File(filePath).readAsString();
+    }
+
+    if (raw == null || raw.trim().isEmpty) {
+      messenger.showSnackBar(const SnackBar(
+        content:         Text('Could not read the selected file.'),
+        backgroundColor: GroveTheme.clayRed,
+        behavior:        SnackBarBehavior.floating,
+      ));
+      return;
+    }
+
+    final success = await model.importFromJson(raw);
+
+    messenger.showSnackBar(SnackBar(
+      content: Text(success
+      ? '✓ Grove restored — ${model.habits.length} trees loaded'
+      : '✗ Invalid backup — make sure you selected the right file'),
+      backgroundColor: success ? theme.primary : GroveTheme.clayRed,
+      behavior:        SnackBarBehavior.floating,
+    ));
+  }
   Widget _emptyState(GroveTheme theme) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -137,16 +137,13 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
             const SizedBox(height: 24),
             Row(
               children: [
-                SizedBox(
-                  width: 52, height: 52,
-                  child: CustomPaint(
-                    painter: FractalTreePainter(
-                      stage:       GrowthStage.youngTree,
-                      baseColor:   theme.primary,
-                      progress:    0.9,
-                      windPhase:   0,
-                      geneticSeed: 42,
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    'assets/images/app_icon.png',
+                    width:  52,
+                    height: 52,
+                    fit:    BoxFit.cover,
                   ),
                 ),
                 const SizedBox(width: 14),

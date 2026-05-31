@@ -477,10 +477,6 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                                           value:    settings.biometricUnlock,
                                           onChanged: (val) async {
                                             HapticFeedback.selectionClick();
-                                            if (val) {
-                                              final ok = await GroveBiometrics.instance.authenticate();
-                                              if (!ok) return;
-                                            }
                                             await settings.setBiometricUnlock(val);
                                           },
                     );

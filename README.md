@@ -50,12 +50,15 @@ alt="Get it on F-Droid" align="center" height="80" /></a>
 </div>
 
 ## Support The App
+
 **Grove** is free forever; no subscriptions, ads, data harvesting. Just you and your trees. If Grove has helped you or someone you know stay clean and build better habits, consider supporting its continued development so it can keep growing.
 
 [<img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" width="auto" height="100" alt="Buy me a Coffee">](https://buymeacoffee.com/resurrect)
 
 ## Development
-**Grove** is built using Flutter. [Install Flutter](https://docs.flutter.dev/get-started/install), clone the repository, enter the project directory, and run `flutter pub get`,Followed by connecting your phone with usb debugging enabled, giving it the necessary permissions and finally running `flutter run --release`.
+
+**Grove** is built using Flutter. [Install Flutter](https://docs.flutter.dev/get-started/install), clone the repository, enter the project directory, and then run `flutter pub get`, Followed by connecting your phone with USB debugging enabled, granting the necessary permissions, and finally runing `flutter run --release`.
 
 ## License
+
 This software is free software licensed under the GNU General Public License 3.0.

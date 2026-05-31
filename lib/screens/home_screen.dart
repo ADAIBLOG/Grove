@@ -513,7 +513,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Exports all trees, relapse history, and streak records.\nImporting will replace your current grove — back up is recommend.',
+                  'Exports all trees, relapse history, and streak records.\nImporting will replace your current grove • back up is recommend.',
                   style:     TextStyle(fontSize: 10, color: settings.theme.textMuted, height: 1.5),
                   textAlign: TextAlign.center,
                 ),

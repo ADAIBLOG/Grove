@@ -18,49 +18,49 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
     _OnboardingStep(
       icon:      Icons.waving_hand_rounded,
       title:     'Welcome to Grove 🌿',
-      body:      'Yo! Grove is a mindful, minimalistic habit tracker that turns your clean streaks into living, growing, animated trees. '
-    'No secret tricks or gimmicks; just a beautiful & private record of your progress.',
+      body:      'A private sobriety and habit tracker where trees represent your growth, '
+    'the longer you stay clean, the more vibrant and lush your trees become.',
     treeStage: GrowthStage.seed,
     treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.forest_rounded,
       title:     'Plant a Tree',
-      body:      'Tap "Plant a Tree" to create a new habit. Give it a name (Alcohol, Smoking, Social Media; '
-    'anything you want to track) then pick a colour. Each habit grows its own unique tree and has a special identifer.',
+      body:      'Tap "Plant a Tree" to create a habit. Give it a name, pick a colour, '
+    'and Grove generates a unique tree just for it. Each one grows differently.',
     treeStage: GrowthStage.sprout,
     treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.show_chart_rounded,
       title:     'Watch It Grow',
-      body:      'Your tree evolves through five stages: Seed → Sprout → Sapling → Young Tree → Grove Tree. '
-    'The longer you maintain your streak, the fuller and more complex your tree grows.',
-    treeStage: GrowthStage.youngTree,
+      body:      'Every day clean helps your tree mature through five growth stages. '
+    'from a tiny seed all the way to a full grove tree with swaying branches and leaves.',
+    treeStage: GrowthStage.sapling,
     treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.refresh_rounded,
       title:     'Log a Relapse',
-      body:      'Slipped up? That\'s okay. Tap "Relapse" to log what happened. '
-    'Grove records your peak streak so that way, your best efforts are not forgotten.',
-    treeStage: GrowthStage.sapling,
+      body:      'If you slip up, record it honestly. Grove tracks your longest streaks and history, '
+    'so your progress is never erased.',
+    treeStage: GrowthStage.youngTree,
     treeColor: GroveTheme.clayRed,
     ),
     _OnboardingStep(
       icon:      Icons.calendar_month_outlined,
       title:     'Your History',
-      body:      'Tap a tree to open its detail page; you\'ll find a live countdown, an interactive monthly calendar, '
-    'and a full timeline of every relapse with reasons and peak sweeps.',
+      body:      'Open any tree to explore calendars, milestones, streak history, relapse notes, '
+    'and insights into your long-term consistency.',
     treeStage: GrowthStage.groveTree,
     treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.lock_outline_rounded,
       title:     'Fully Private',
-      body:      'All your data lives only on this device. Nothing is ever sent anywhere. '
-    'Use Export / Import in Settings to back up or move between devices. '
-    'Ready? Let\'s start growing.',
+      body:      'Everything stays on your device. Nothing is ever sent anywhere. '
+    'Back up or move your grove anytime via Export / Import in Settings. '
+    'Now go grow something worth keeping. 🌱',
     treeStage: GrowthStage.groveTree,
     treeColor: GroveTheme.mossGreen,
     ),

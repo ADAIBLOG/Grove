@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:grove/models/grove_models.dart';
-import 'package:grove/theme/grove_theme.dart';
 
 class _TreeDNA {
   final double lean;

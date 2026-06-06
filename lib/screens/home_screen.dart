@@ -472,7 +472,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                       contentPadding: EdgeInsets.zero,
                       title: Text('Biometric Unlock',
                                   style: TextStyle(color: settings.theme.textPrimary, fontSize: 14)),
-                                  subtitle: Text('Require fingerprint / Pin to open Grove',
+                                  subtitle: Text('Require Fingerprint / Pin to open Grove',
                                                  style: TextStyle(color: settings.theme.textMuted, fontSize: 11)),
                                                  activeThumbColor: settings.theme.primary,
                                           value:    settings.biometricUnlock,

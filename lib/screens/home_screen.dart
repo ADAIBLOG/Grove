@@ -601,7 +601,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
     final bytes     = Uint8List.fromList(json.codeUnits);
     final messenger = ScaffoldMessenger.of(ctx);
 
-    final String? outputPath = await FilePicker.platform.saveFile(
+    final String? outputPath = await FilePicker.saveFile(
       dialogTitle:       'Save Grove Backup',
       fileName:          fileName,
       type:              FileType.custom,
@@ -635,7 +635,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
     final theme     = settings.theme;
     final messenger = ScaffoldMessenger.of(ctx);
 
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       dialogTitle:       'Select Grove Backup',
       type:              FileType.custom,
       allowedExtensions: ['json'],

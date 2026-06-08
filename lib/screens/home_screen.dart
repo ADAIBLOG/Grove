@@ -521,110 +521,72 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
               const SizedBox(height: 4),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text('Daily Reminder',
+                title: Text('Milestone Notifications',
                             style: TextStyle(color: settings.theme.textPrimary, fontSize: 14)),
-                            subtitle: Text('Reminder each day to keep your motivation',
+                            subtitle: Text('Get notified when a tree reaches a new growth stage',
                                            style: TextStyle(color: settings.theme.textMuted, fontSize: 11)),
                                            activeThumbColor: settings.theme.primary,
-                             value:    settings.dailyNotification,
+                             value:    settings.milestoneNotifications,
                              onChanged: (val) async {
                                HapticFeedback.selectionClick();
-                               await settings.setDailyNotification(val);
+                               await settings.setMilestoneNotifications(val);
                              },
               ),
-              if (settings.dailyNotification)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(children: [
-                    Icon(Icons.access_time_rounded, size: 16, color: settings.theme.textMuted),
-                    const SizedBox(width: 8),
-                    Text('Reminder time',
-                         style: TextStyle(fontSize: 13, color: settings.theme.textSecondary)),
-                         const Spacer(),
-                         GestureDetector(
-                           onTap: () async {
-                             final picked = await showTimePicker(
-                               context: sheetCtx,
-                               initialTime: settings.notifTime,
-                             );
-                             if (picked != null) {
-                               HapticFeedback.selectionClick();
-                               await settings.setNotifTime(picked);
-                             }
-                           },
-                           child: Container(
-                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                             decoration: BoxDecoration(
-                               color:        settings.theme.primary.withValues(alpha: 0.12),
-                               borderRadius: BorderRadius.circular(10),
-                               border:       Border.all(color: settings.theme.primary.withValues(alpha: 0.3)),
-                             ),
-                             child: Text(
-                               settings.notifTime.format(sheetCtx),
-                               style: TextStyle(
-                                 fontSize: 14, fontWeight: FontWeight.w600,
-                                 color: settings.theme.primary,
-                               ),
-                             ),
-                           ),
-                         ),
-                  ]),
+              FutureBuilder<bool>(
+                future: GroveBiometrics.instance.isAvailable,
+                builder: (_, snap) {
+                  final available = snap.data ?? false;
+                  if (!available) return const SizedBox.shrink();
+                  return SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Biometric Unlock',
+                                style: TextStyle(color: settings.theme.textPrimary, fontSize: 14)),
+                                subtitle: Text('Require Fingerprint / Pin to open Grove',
+                                               style: TextStyle(color: settings.theme.textMuted, fontSize: 11)),
+                                               activeThumbColor: settings.theme.primary,
+                                        value:    settings.biometricUnlock,
+                                        onChanged: (val) async {
+                                          HapticFeedback.selectionClick();
+                                          await settings.setBiometricUnlock(val);
+                                        },
+                  );
+                },
+              ),
+              const Divider(height: 32),
+              Text('DATA MANAGEMENT', style: TextStyle(
+                fontSize: 11, fontWeight: FontWeight.w700,
+                color: settings.theme.textSecondary, letterSpacing: 1.0,
+              )),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _showExportSheet(ctx, model, settings),
+                icon:  const Icon(Icons.upload_outlined, size: 16),
+                label: const Text('Export Grove Backup'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: settings.theme.textPrimary,
+                    side:    BorderSide(color: settings.theme.textMuted.withValues(alpha: 0.4)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape:   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                FutureBuilder<bool>(
-                  future: GroveBiometrics.instance.isAvailable,
-                  builder: (_, snap) {
-                    final available = snap.data ?? false;
-                    if (!available) return const SizedBox.shrink();
-                    return SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text('Biometric Unlock',
-                                  style: TextStyle(color: settings.theme.textPrimary, fontSize: 14)),
-                                  subtitle: Text('Require Fingerprint / Pin to open Grove',
-                                                 style: TextStyle(color: settings.theme.textMuted, fontSize: 11)),
-                                                 activeThumbColor: settings.theme.primary,
-                                          value:    settings.biometricUnlock,
-                                          onChanged: (val) async {
-                                            HapticFeedback.selectionClick();
-                                            await settings.setBiometricUnlock(val);
-                                          },
-                    );
-                  },
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => _showImportSheet(ctx, model, settings),
+                icon:  const Icon(Icons.download_outlined, size: 16),
+                label: const Text('Restore Grove from Backup'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: settings.theme.textPrimary,
+                    side:    BorderSide(color: settings.theme.textMuted.withValues(alpha: 0.4)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape:   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                const Divider(height: 32),
-                Text('DATA MANAGEMENT', style: TextStyle(
-                  fontSize: 11, fontWeight: FontWeight.w700,
-                  color: settings.theme.textSecondary, letterSpacing: 1.0,
-                )),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => _showExportSheet(ctx, model, settings),
-                  icon:  const Icon(Icons.upload_outlined, size: 16),
-                  label: const Text('Export Grove Backup'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: settings.theme.textPrimary,
-                      side:    BorderSide(color: settings.theme.textMuted.withValues(alpha: 0.4)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape:   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                OutlinedButton.icon(
-                  onPressed: () => _showImportSheet(ctx, model, settings),
-                  icon:  const Icon(Icons.download_outlined, size: 16),
-                  label: const Text('Restore Grove from Backup'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: settings.theme.textPrimary,
-                      side:    BorderSide(color: settings.theme.textMuted.withValues(alpha: 0.4)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape:   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Export saves a .json file to a location you choose.\nImporting will replace your current grove • export a backup first.',
-                  style:     TextStyle(fontSize: 10, color: settings.theme.textMuted, height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Export saves a .json file to a location you choose.\nImporting will replace your current grove • export a backup first.',
+                style:     TextStyle(fontSize: 10, color: settings.theme.textMuted, height: 1.5),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -635,7 +597,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
   Future<void> _showExportSheet(BuildContext ctx, GroveModel model, GroveSettings settings) async {
     final json      = model.exportJson();
     final theme     = settings.theme;
-    final fileName  = 'Grove_backup_${DateFormat("yyyy-MM-dd").format(DateTime.now())}.json';
+    final fileName  = 'Grove_backup_${DateFormat("yyyy-MM-dd_HH-mm-ss").format(DateTime.now())}.json';
     final bytes     = Uint8List.fromList(json.codeUnits);
     final messenger = ScaffoldMessenger.of(ctx);
 

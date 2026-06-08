@@ -18,8 +18,6 @@ class HabitCard extends StatefulWidget {
 }
 
 class _HabitCardState extends State<HabitCard> {
-  double _dragOffset = 0;
-  bool   _isPruning  = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,188 +30,131 @@ class _HabitCardState extends State<HabitCard> {
     final isCompact    = widget.layoutMode == LayoutMode.compactGrid;
     final isList       = widget.layoutMode == LayoutMode.compactList;
 
-    final dissolveOpacity = 1.0 - (_dragOffset.abs() / 300).clamp(0.0, 1.0);
-    final dissolveScale   = 1.0 - (_dragOffset.abs() / 600).clamp(0.0, 0.3);
-
     if (isList) {
       return GestureDetector(
-        onLongPressStart:      (_) => setState(() => _isPruning = true),
-        onLongPressMoveUpdate: _isPruning ? (d) => setState(() => _dragOffset = d.offsetFromOrigin.dx) : null,
-        onLongPressEnd: (_) {
-          if (_dragOffset.abs() > 200) {
-            final deleted = widget.habit;
-            model.deleteHabit(widget.habit.id);
-            HapticFeedback.heavyImpact();
-            ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-              content:         Text('"${deleted.name}" removed'),
-              behavior:        SnackBarBehavior.floating,
-              duration:        const Duration(seconds: 4),
-              action: SnackBarAction(
-                label:    'Undo',
-                onPressed: () => model.restoreHabit(deleted),
-              ),
-            ));
-          }
-          setState(() { _isPruning = false; _dragOffset = 0; });
-        },
-        child: Opacity(
-          opacity: 1.0 - (_dragOffset.abs() / 300).clamp(0.0, 1.0),
-          child: Transform.translate(
-            offset: Offset(_dragOffset, 0),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: theme.cardBg, borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: widget.habit.color.withValues(alpha: 0.3)),
-              ),
-              child: Row(children: [
-                GestureDetector(
-                  onTap: () => _goDetail(context),
-                  child: SizedBox(width: 60, height: 60, child: AnimatedTreeWidget(habit: widget.habit)),
-                ),
-                const SizedBox(width: 12),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(widget.habit.name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: theme.textPrimary)),
-                       const SizedBox(height: 4),
-                       Row(children: [
-                         Container(
-                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                           decoration: BoxDecoration(
-                             color: widget.habit.color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-                             child: Text(stageLabel(stage),
-                             style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: widget.habit.color)),
-                         ),
-                         const SizedBox(width: 6),
-                         Text('Day $days', style: TextStyle(fontSize: 12, color: theme.textSecondary)),
-                       ]),
-                ])),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () => _showRelapseDialog(context, model),
-                  child: const Icon(Icons.refresh_rounded, size: 20, color: GroveTheme.clayRed),
-                ),
-              ]),
-            ),
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: theme.cardBg, borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: widget.habit.color.withValues(alpha: 0.3)),
           ),
+          child: Row(children: [
+            GestureDetector(
+              onTap: () => _goDetail(context),
+              child: SizedBox(width: 60, height: 60, child: AnimatedTreeWidget(habit: widget.habit)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(widget.habit.name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: theme.textPrimary)),
+                   const SizedBox(height: 4),
+                   Row(children: [
+                     Container(
+                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                       decoration: BoxDecoration(
+                         color: widget.habit.color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
+                         child: Text(stageLabel(stage),
+                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: widget.habit.color)),
+                     ),
+                     const SizedBox(width: 6),
+                     Text('Day $days', style: TextStyle(fontSize: 12, color: theme.textSecondary)),
+                   ]),
+            ])),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => _showRelapseDialog(context, model),
+              child: const Icon(Icons.refresh_rounded, size: 20, color: GroveTheme.clayRed),
+            ),
+          ]),
         ),
       );
     }
 
     return GestureDetector(
-      onLongPressStart:      (_) => setState(() => _isPruning = true),
-      onLongPressMoveUpdate: _isPruning ? (d) => setState(() => _dragOffset = d.offsetFromOrigin.dx) : null,
-      onLongPressEnd: (_) {
-        if (_dragOffset.abs() > 200) {
-          final deleted = widget.habit;
-          model.deleteHabit(widget.habit.id);
-          HapticFeedback.heavyImpact();
-          ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(
-            content:  Text('"${deleted.name}" removed'),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label:    'Undo',
-              onPressed: () => model.restoreHabit(deleted),
-            ),
-          ));
-        }
-        setState(() { _isPruning = false; _dragOffset = 0; });
-      },
-      child: Opacity(
-        opacity: dissolveOpacity,
-        child: Transform.scale(
-          scale: dissolveScale,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 350), curve: Curves.easeOutCubic,
-            margin:   isCompact ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 26, vertical: 10),
-            padding:  EdgeInsets.all(isCompact ? 12 : 0),
-            decoration: BoxDecoration(
-              color:        theme.cardBg,
-              borderRadius: BorderRadius.circular(isCompact ? 22 : 28),
-              border: Border.all(
-                color: widget.isSelected ? widget.habit.color.withValues(alpha: 0.45) : theme.surfaceHigh,
-                width: widget.isSelected ? 1.5 : 1.0,
-              ),
-              boxShadow: widget.isSelected && !isCompact
-              ? [BoxShadow(color: widget.habit.color.withValues(alpha: 0.18), blurRadius: 32, spreadRadius: 2)]
-              : [],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => _goDetail(context),
-                  child: Hero(
-                    tag: 'tree_${widget.habit.id}',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: SizedBox(
-                        width:  isCompact ? 100 : 175,
-                        height: isCompact ? 100 : 175,
-                        child:  AnimatedTreeWidget(habit: widget.habit),
-                      ),
-                    ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 350), curve: Curves.easeOutCubic,
+        margin:   isCompact ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 26, vertical: 10),
+        padding:  EdgeInsets.all(isCompact ? 12 : 0),
+        decoration: BoxDecoration(
+          color:        theme.cardBg,
+          borderRadius: BorderRadius.circular(isCompact ? 22 : 28),
+          border: Border.all(
+            color: widget.isSelected ? widget.habit.color.withValues(alpha: 0.45) : theme.surfaceHigh,
+            width: widget.isSelected ? 1.5 : 1.0,
+          ),
+          boxShadow: widget.isSelected && !isCompact
+          ? [BoxShadow(color: widget.habit.color.withValues(alpha: 0.18), blurRadius: 32, spreadRadius: 2)]
+          : [],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => _goDetail(context),
+              child: Hero(
+                tag: 'tree_${widget.habit.id}',
+                child: Material(
+                  color: Colors.transparent,
+                  child: SizedBox(
+                    width:  isCompact ? 100 : 175,
+                    height: isCompact ? 100 : 175,
+                    child:  AnimatedTreeWidget(habit: widget.habit),
                   ),
                 ),
-                SizedBox(height: isCompact ? 8 : 10),
-                Text(widget.habit.name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                     style: TextStyle(fontSize: isCompact ? 15 : 22, fontWeight: FontWeight.w700,
-                                      color: theme.textPrimary, letterSpacing: 0.3)),
-                                      SizedBox(height: isCompact ? 4 : 6),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          if (!isCompact) ...[
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                                              decoration: BoxDecoration(
-                                                color: widget.habit.color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
-                                                child: Text(stageLabel(stage), style: TextStyle(
-                                                  fontSize: 11, fontWeight: FontWeight.w600, color: widget.habit.color, letterSpacing: 0.8)),
-                                            ),
-                                            const SizedBox(width: 8),
-                                          ],
-                                          Text('Day $days', style: TextStyle(
-                                            fontSize:   isCompact ? 11 : 13,
-                                            fontWeight: isCompact ? FontWeight.w600 : FontWeight.normal,
-                                            color:      theme.textSecondary)),
-                                        ],
-                                      ),
-                                      if (!isCompact) ...[
-                                        const SizedBox(height: 4),
-                                        Text(stageTagline(stage),
-                                        style: TextStyle(fontSize: 11, color: theme.textMuted, fontStyle: FontStyle.italic),
-                                        textAlign: TextAlign.center),
-                                        const SizedBox(height: 16),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            _OutlineAction(icon: Icons.calendar_month_outlined,
-                                                           label: 'History${relapseCount > 0 ? ' ($relapseCount)' : ''}',
-                                                           color: theme.textSecondary, onTap: () => _goDetail(context)),
-                                                           const SizedBox(width: 10),
-                                                           _OutlineAction(icon: Icons.refresh_rounded, label: 'Relapse',
-                                                                          color: GroveTheme.clayRed, onTap: () => _showRelapseDialog(context, model)),
-                                          ],
-                                        ),
-                                      ] else ...[
-                                        const SizedBox(height: 12),
-                                        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                                          IconButton(icon: Icon(Icons.calendar_month_outlined, size: 16, color: theme.textSecondary),
-                                          onPressed: () => _goDetail(context), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
-                                          IconButton(icon: const Icon(Icons.refresh_rounded, size: 16, color: GroveTheme.clayRed),
-                                          onPressed: () => _showRelapseDialog(context, model), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
-                                        ]),
-                                      ],
-              ],
+              ),
             ),
-          ),
+            SizedBox(height: isCompact ? 8 : 10),
+            Text(widget.habit.name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                 style: TextStyle(fontSize: isCompact ? 15 : 22, fontWeight: FontWeight.w700,
+                                  color: theme.textPrimary, letterSpacing: 0.3)),
+                      SizedBox(height: isCompact ? 4 : 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (!isCompact) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: widget.habit.color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+                                child: Text(stageLabel(stage), style: TextStyle(
+                                  fontSize: 11, fontWeight: FontWeight.w600, color: widget.habit.color, letterSpacing: 0.8)),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          Text('Day $days', style: TextStyle(
+                            fontSize:   isCompact ? 11 : 13,
+                            fontWeight: isCompact ? FontWeight.w600 : FontWeight.normal,
+                            color:      theme.textSecondary)),
+                        ],
+                      ),
+                      if (!isCompact) ...[
+                        const SizedBox(height: 4),
+                        Text(stageTagline(stage),
+                        style: TextStyle(fontSize: 11, color: theme.textMuted, fontStyle: FontStyle.italic),
+                        textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _OutlineAction(icon: Icons.calendar_month_outlined,
+                                         label: 'History${relapseCount > 0 ? ' ($relapseCount)' : ''}',
+                                         color: theme.textSecondary, onTap: () => _goDetail(context)),
+                                         const SizedBox(width: 10),
+                                         _OutlineAction(icon: Icons.refresh_rounded, label: 'Relapse',
+                                                        color: GroveTheme.clayRed, onTap: () => _showRelapseDialog(context, model)),
+                        ],
+                      ),
+                      ] else ...[
+                        const SizedBox(height: 12),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                          IconButton(icon: Icon(Icons.calendar_month_outlined, size: 16, color: theme.textSecondary),
+                          onPressed: () => _goDetail(context), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                          IconButton(icon: const Icon(Icons.refresh_rounded, size: 16, color: GroveTheme.clayRed),
+                          onPressed: () => _showRelapseDialog(context, model), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                        ]),
+                      ],
+          ],
         ),
       ),
     );

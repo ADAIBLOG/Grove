@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grove/models/grove_models.dart';
+import 'package:grove/services/grove_notifications.dart';
 import 'package:grove/services/widget_bridge.dart';
 
 class GroveModel extends ChangeNotifier {
@@ -44,6 +45,10 @@ class GroveModel extends ChangeNotifier {
         await _prefs!.setString(h.id, h.toJson());
       }
       await GroveWidgetBridge.instance.renderAndUpdate(_habits);
+      final enabled = _prefs?.getBool('milestone_notifications') ?? false;
+      if (enabled) {
+        await GroveNotifications.instance.checkAndNotifyMilestones(_habits);
+      }
     } catch (e) {
       debugPrint('Persist error: $e');
     }
@@ -167,6 +172,7 @@ class GroveModel extends ChangeNotifier {
   void deleteHabit(String habitId) {
     _habits.removeWhere((h) => h.id == habitId);
     _prefs?.remove(habitId);
+    GroveNotifications.instance.clearHabitMilestones(habitId);
     _persist();
     notifyListeners();
   }

@@ -138,17 +138,81 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   SliverAppBar(
     backgroundColor: theme.bg, pinned: true,
     leading: IconButton(
-      icon:      const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-      color:     theme.textSecondary, onPressed: () => Navigator.pop(ctx)),
-      title: Text(habit.name,
-                  style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.w600, fontSize: 18)),
-                  actions: [
-                    Padding(padding: const EdgeInsets.only(right: 16),
-                    child: Container(width: 10, height: 10,
-                                     decoration: BoxDecoration(color: habit.color, shape: BoxShape.circle,
-                                                               boxShadow: [BoxShadow(color: habit.color.withValues(alpha: 0.6), blurRadius: 6)]))),
-                  ],
+      icon:  const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+      color: theme.textSecondary, onPressed: () => Navigator.pop(ctx)),
+      title: GestureDetector(
+        onTap: () => _showRenameDialog(ctx, habit, theme),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(habit.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.w600, fontSize: 18)),
+            ),
+            const SizedBox(width: 6),
+            Icon(Icons.edit_outlined, size: 15, color: theme.textMuted),
+          ],
+        ),
+      ),
+      actions: [
+        Padding(padding: const EdgeInsets.only(right: 16),
+        child: Container(width: 10, height: 10,
+                         decoration: BoxDecoration(color: habit.color, shape: BoxShape.circle,
+                                                   boxShadow: [BoxShadow(color: habit.color.withValues(alpha: 0.6), blurRadius: 6)]))),
+      ],
   );
+
+  void _showRenameDialog(BuildContext ctx, HabitTree habit, GroveTheme theme) {
+    final ctrl = TextEditingController(text: habit.name);
+    showDialog(
+      context: ctx,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: theme.surfaceHigh,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('Rename Habit', style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.w700)),
+        content: TextField(
+          controller:           ctrl,
+          autofocus:            true,
+          textCapitalization:   TextCapitalization.words,
+          style:                TextStyle(color: theme.textPrimary),
+          decoration: InputDecoration(
+            labelText:  'Habit Name',
+            prefixIcon: Icon(Icons.edit_outlined, size: 18, color: theme.textMuted),
+          ),
+          onSubmitted: (val) {
+            final trimmed = val.trim();
+            if (trimmed.isNotEmpty) {
+              context.read<GroveModel>().renameHabit(habit.id, trimmed);
+              HapticFeedback.lightImpact();
+            }
+            Navigator.pop(dialogCtx);
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text('Cancel', style: TextStyle(color: theme.textSecondary)),
+          ),
+          FilledButton(
+            onPressed: () {
+              final trimmed = ctrl.text.trim();
+              if (trimmed.isNotEmpty) {
+                context.read<GroveModel>().renameHabit(habit.id, trimmed);
+                HapticFeedback.lightImpact();
+              }
+              Navigator.pop(dialogCtx);
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: habit.color,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _treeHero(HabitTree habit) {
     return LayoutBuilder(

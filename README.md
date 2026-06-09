@@ -15,7 +15,7 @@ Whether you're maintaining sobriety, breaking harmful habits, or building positi
 <img width="200" src="https://github.com/resurrectdev1/Grove/blob/main/assets/screenshot_6.png">
 </p>
 
-### How it works?
+### How does it work?
 
 Simply open Grove and click the "Plant a Tree" button to start customizing your habit! Once you give your tree a name and color, click "Plant Tree" to see it come to life on your home screen :) You can then click on any habit to open a menu showing you your total relapses, your best record, and your current streak. There is also additional information, such as a "time since last relapse" tracker and interactive monthly logs where you can report a relapse, add notes, and even edit past or present relapse times. Just under that, you will find a full history of your recorded relapses along with the reasons why!
 
@@ -25,15 +25,15 @@ Simply open Grove and click the "Plant a Tree" button to start customizing your 
 
 🌀 **Dynamic Layouts:** Experience your forest your way. Switch between a 3D vertical drum roll, a smooth horizontal carousel, a compact grid, or a streamlined list.
 
-🎨 **Material You Integration:** A cool, nature-inspired theme engine that supports Android 12+ dynamic coloring, adjusting your app's palette to match your wallpaper (Material You suppourt).
+🎨 **Material You Integration:** A cool, nature-inspired theme engine that supports Android 12+ dynamic coloring, adjusting your app's palette to match your wallpaper (Material You support).
 
 📈 **Analytics:** Beyond simple streaks, the app uses a "Peak Sweep" algorithm to track your history, relapse reasons, and consistency across an interactive monthly calendar.
 
-🔔 **Reminders:** Get reminded when your tree hits a certain growth milestone; helping motivate you, and stay clean longer. 
+🔔 **Reminders:** Get reminded when your tree hits a certain growth milestone, helping motivate you, and stay clean longer. 
 
-🔒 **Privacy Focused:** Keep your journey private with biometric, Face ID, or PIN authentication to shelter your data.
+🔒 **Privacy-Focused:** Keep your journey private with biometric, Face ID, or PIN authentication to shelter your data.
 
-🌐 **Fully Offline:** Fully functional without an internet connection. No cloud, no tracking; your data stays where it belongs; solely on your device.
+🌐 **Fully Offline:** Fully functional without an internet connection. No cloud, no tracking. Your data stays where it belongs: solely on your device.
 
 ## Download 
 
@@ -53,13 +53,13 @@ alt="Get it on F-Droid" align="center" height="80" /></a>
 
 ## Support The App
 
-**Grove** is free forever; no subscriptions, ads, data harvesting. Just you and your trees. If Grove has helped you or someone you know stay clean and build better habits, consider supporting its continued development so it can keep growing.
+**Grove** is free forever: no subscriptions, no ads, and no data harvesting. Just you and your trees. If Grove has helped you or someone you know stay clean and build better habits, consider supporting its continued development so it can keep growing.
 
 [<img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" width="auto" height="100" alt="Buy me a Coffee">](https://buymeacoffee.com/resurrect)
 
 ## Development
 
-**Grove** is built using Flutter. [Install Flutter](https://docs.flutter.dev/get-started/install), clone the repository, enter the project directory, and then run `flutter pub get`, Followed by connecting your phone with USB debugging enabled, granting the necessary permissions, and finally runing `flutter run --release`.
+**Grove** is built using Flutter. [Install Flutter](https://docs.flutter.dev/get-started/install), clone the repository, enter the project directory, and then run `flutter pub get`, followed by connecting your phone with USB debugging enabled, granting the necessary permissions, and finally running `flutter run --release`.
 
 ## License
 

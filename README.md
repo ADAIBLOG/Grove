@@ -29,11 +29,11 @@ Simply open Grove and click the "Plant a Tree" button to start customizing your 
 
 📈 **Analytics:** Beyond simple streaks, Grove tracks your peak record, total relapses, and time you've spent clean since your last relapse as well as the reasons why logged across an interactive monthly calendar.
 
-🔔 **Reminders:** Get reminded when your tree hits a certain growth milestone, helping motivate you, and stay clean longer.
-
 🪟 **Home Screen Widgets:** Keep your journey visible at a glance with a live tree widget and a calendar widget integrated right from into your home screen.
 
-🔒 **Privacy-Focused:** Keep your journey private with biometric, Face ID, or PIN authentication to shelter your private data.
+🔔 **Reminders:** Get reminded when your tree hits a certain growth milestone, helping motivate you, and stay clean longer.
+
+🔒 **Privacy-Focused:** Keep your journey private with biometric, Fingerprint, or PIN authentication to help keep your data private.
 
 🌐 **Fully Offline:** Fully functional without an internet connection. No cloud, no tracking. Your data stays where it belongs: solely on your device.
 

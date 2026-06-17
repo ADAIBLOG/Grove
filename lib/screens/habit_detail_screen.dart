@@ -181,7 +181,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
           border:       Border.all(color: habit.color.withValues(alpha: 0.22)),
         ),
         child: Column(children: [
-          Text(checkedIn ? 'Today is checked in' : 'Today is not yet checked in',
+          Text(checkedIn ? 'Checked in today' : 'Not checked in today',
                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
                                 color: theme.textSecondary, letterSpacing: 0.8)),
                       const SizedBox(height: 12),

@@ -18,6 +18,7 @@ class MonthlyCalendar extends StatelessWidget {
     final theme          = context.watch<GroveSettings>().theme;
     final model          = context.read<GroveModel>();
     final now            = DateTime.now();
+    final isCheckIn      = habit.mode == HabitMode.checkIn;
     final targetMonth    = DateTime(now.year, now.month + monthOffset, 1);
     final monthName      = DateFormat('MMMM yyyy').format(targetMonth);
     final lastDayOfMonth = DateTime(targetMonth.year, targetMonth.month + 1, 0);
@@ -69,7 +70,6 @@ class MonthlyCalendar extends StatelessWidget {
                                        final today      = DateTime(now.year, now.month, now.day);
                                        final isToday    = cellDate == today;
                                        final isFuture   = cellDate.isAfter(today);
-                                       final isCheckIn  = habit.mode == HabitMode.checkIn;
                                        final hasRelapse = habit.relapseDays.contains(cellDate);
                                        final hasCheckIn = isCheckIn && habit.checkInDays.contains(cellDate);
                                        final hasMark    = isCheckIn ? hasCheckIn : hasRelapse;

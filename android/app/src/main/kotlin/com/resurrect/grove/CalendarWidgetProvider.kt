@@ -82,6 +82,8 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val habitName = habit?.optString("name", "—") ?: "Tap to pick habit"
             views.setTextViewText(R.id.cal_habit_name, "🌿 $habitName  ›")
 
+            val isCheckIn = (habit?.optInt("mode", 0) ?: 0) == 1
+
             val relapseDays = mutableSetOf<Int>()
             habit?.optJSONArray("relapses")?.let { arr ->
                 for (i in 0 until arr.length()) {
@@ -91,6 +93,19 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         val m = ts.substring(5, 7).toIntOrNull() ?: continue
                         val d = ts.substring(8, 10).toIntOrNull() ?: continue
                         if (y == year && m == month) relapseDays.add(d)
+                    }
+                }
+            }
+
+            val checkInDays = mutableSetOf<Int>()
+            habit?.optJSONArray("checkInDays")?.let { arr ->
+                for (i in 0 until arr.length()) {
+                    val iso = arr.optString(i, "")
+                    if (iso.length >= 10) {
+                        val y = iso.substring(0, 4).toIntOrNull() ?: continue
+                        val m = iso.substring(5, 7).toIntOrNull() ?: continue
+                        val d = iso.substring(8, 10).toIntOrNull() ?: continue
+                        if (y == year && m == month) checkInDays.add(d)
                     }
                 }
             }
@@ -128,15 +143,17 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         views.setTextViewText(id, "$day")
                         views.setInt(id, "setTextColor", 0xFFE0EBE0.toInt())
                         val isToday   = year == todayYear && month == todayMonth && day == todayDay
-                        val isRelapse = relapseDays.contains(day)
+                        val isRelapse = !isCheckIn && relapseDays.contains(day)
+                        val isCheckInDay = isCheckIn && checkInDays.contains(day)
                         val isFuture  = year > todayYear ||
                         (year == todayYear && month > todayMonth) ||
                         (year == todayYear && month == todayMonth && day > todayDay)
                         val bgRes = when {
-                            isRelapse -> R.drawable.cal_cell_relapse
-                            isToday   -> R.drawable.cal_cell_today
-                            isFuture  -> R.drawable.cal_cell_future
-                            else      -> R.drawable.cal_cell_clean
+                            isRelapse    -> R.drawable.cal_cell_relapse
+                            isCheckInDay -> R.drawable.cal_cell_checkin
+                            isToday      -> R.drawable.cal_cell_today
+                            isFuture     -> R.drawable.cal_cell_future
+                            else         -> R.drawable.cal_cell_clean
                         }
                         views.setInt(id, "setBackgroundResource", bgRes)
                     }

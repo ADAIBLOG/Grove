@@ -447,34 +447,34 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                     label: 'Wheel', icon: Icons.view_day,
                     isSelected: settings.layoutMode == LayoutMode.verticalWheel,
                     theme: settings.theme,
-                    onTap: () { settings.setLayoutMode(LayoutMode.verticalWheel); HapticFeedback.selectionClick(); Navigator.pop(ctx); },
+                    onTap: () { settings.setLayoutMode(LayoutMode.verticalWheel); HapticFeedback.selectionClick(); Navigator.pop(sheetCtx); },
                   ),
                   const SizedBox(width: 8),
                   _LayoutButton(
                     label: 'Carousel', icon: Icons.view_carousel,
                     isSelected: settings.layoutMode == LayoutMode.horizontalCarousel,
                     theme: settings.theme,
-                    onTap: () { settings.setLayoutMode(LayoutMode.horizontalCarousel); HapticFeedback.selectionClick(); Navigator.pop(ctx); },
+                    onTap: () { settings.setLayoutMode(LayoutMode.horizontalCarousel); HapticFeedback.selectionClick(); Navigator.pop(sheetCtx); },
                   ),
                   const SizedBox(width: 8),
                   _LayoutButton(
                     label: 'Grid', icon: Icons.grid_view,
                     isSelected: settings.layoutMode == LayoutMode.compactGrid,
                     theme: settings.theme,
-                    onTap: () { settings.setLayoutMode(LayoutMode.compactGrid); HapticFeedback.selectionClick(); Navigator.pop(ctx); },
+                    onTap: () { settings.setLayoutMode(LayoutMode.compactGrid); HapticFeedback.selectionClick(); Navigator.pop(sheetCtx); },
                   ),
                   const SizedBox(width: 8),
                   _LayoutButton(
                     label: 'List', icon: Icons.list,
                     isSelected: settings.layoutMode == LayoutMode.compactList,
                     theme: settings.theme,
-                    onTap: () { settings.setLayoutMode(LayoutMode.compactList); HapticFeedback.selectionClick(); Navigator.pop(ctx); },
+                    onTap: () { settings.setLayoutMode(LayoutMode.compactList); HapticFeedback.selectionClick(); Navigator.pop(sheetCtx); },
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () { Navigator.pop(ctx); _showReorderSheet(ctx); },
+                onPressed: () { Navigator.pop(sheetCtx); _showReorderSheet(ctx); },
                 icon:  Icon(Icons.swap_vert_rounded, size: 16, color: settings.theme.textSecondary),
                 label: Text('Reorder Grove', style: TextStyle(color: settings.theme.textPrimary)),
                 style: OutlinedButton.styleFrom(
@@ -494,7 +494,7 @@ class _GroveHomeScreenState extends State<GroveHomeScreen> {
                 onChanged: (val) {
                   if (val != null) settings.setThemeMode(val);
                   HapticFeedback.selectionClick();
-                  Navigator.pop(ctx);
+                  Navigator.pop(sheetCtx);
                 },
                 child: Column(
                   children: GroveThemeMode.values.map((mode) {

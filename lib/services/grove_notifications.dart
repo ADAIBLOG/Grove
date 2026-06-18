@@ -104,22 +104,22 @@ class GroveNotifications {
       case GrowthStage.sprout:
         return (
           '$name is sprouting! 🌱',
-          'Your first week is done. Roots are forming • keep going.',
+          'Your tree\'s roots are done forming. Keep growing.',
         );
       case GrowthStage.sapling:
         return (
           '$name is a sapling now! 🌿',
-          'One month strong. Your tree is standing on its own.',
+          'Your tree is standing on its own, look how much you have grown',
         );
       case GrowthStage.youngTree:
         return (
           '$name is growing tall! 🌳',
-          'Three months clean. Your canopy is taking shape • incredible.',
+          'Your canopy is starting to take shape, incredible.',
         );
       case GrowthStage.groveTree:
         return (
           '$name is a grove tree! 🌲',
-          'You made it to 90 days and beyond. You have become the forest.',
+          'Congratulations!!! You have become the forest.',
         );
       case GrowthStage.seed:
         return ('', '');

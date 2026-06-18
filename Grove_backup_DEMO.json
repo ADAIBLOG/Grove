@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-05-31T00:42:55.916579",
+  "treeCount": 4,
+  "trees": [
+    {
+      "id": "habit_1780197408992",
+      "name": "Smoking",
+      "color": 4283337567,
+      "startDate": "2026-05-30T23:16:48.992776",
+      "lastReset": "2025-11-30T23:19:00.000",
+      "relapses": [
+        {
+          "timestamp": "2025-11-30T23:19:00.000",
+          "reason": "Today marks the last day I smoke...",
+          "peakDays": 10
+        },
+        {
+          "timestamp": "2025-11-20T21:08:00.000",
+          "reason": "Partying with friends; peer pressure.",
+          "peakDays": 8
+        },
+        {
+          "timestamp": "2025-11-18T13:41:00.000",
+          "reason": "Trigger.",
+          "peakDays": 8
+        },
+        {
+          "timestamp": "2025-11-09T17:45:00.000",
+          "reason": "Stress from work.",
+          "peakDays": 0
+        }
+      ],
+      "geneticSeed": 644784720
+    },
+    {
+      "id": "habit_1780197427307",
+      "name": "Alcohol",
+      "color": 4287323806,
+      "startDate": "2026-05-30T23:17:07.307288",
+      "lastReset": "2026-05-16T23:18:00.000",
+      "relapses": [
+        {
+          "timestamp": "2026-05-16T23:18:00.000",
+          "reason": "",
+          "peakDays": 0
+        }
+      ],
+      "geneticSeed": 115876209
+    },
+    {
+      "id": "habit_1780197441946",
+      "name": "Social Media",
+      "color": 4288564283,
+      "startDate": "2026-05-30T23:17:21.946214",
+      "lastReset": "2026-04-30T23:19:00.000",
+      "relapses": [
+        {
+          "timestamp": "2026-04-30T23:19:00.000",
+          "reason": "",
+          "peakDays": 0
+        }
+      ],
+      "geneticSeed": 682522539
+    },
+    {
+      "id": "habit_1780197482119",
+      "name": "Gambling",
+      "color": 4288559979,
+      "startDate": "2026-05-30T23:18:02.119007",
+      "lastReset": "2026-05-28T23:20:00.000",
+      "relapses": [
+        {
+          "timestamp": "2026-05-28T23:20:00.000",
+          "reason": "",
+          "peakDays": 0
+        }
+      ],
+      "geneticSeed": 863434560
+    }
+  ]
+}

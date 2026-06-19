@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:grove/l10n/app_localizations.dart';
 import 'package:grove/models/grove_models.dart';
 import 'package:grove/providers/grove_model.dart';
 import 'package:grove/providers/grove_settings.dart';
@@ -70,6 +71,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     }
     final habit = context.watch<GroveModel>().habitById(widget.habitId);
     final theme = context.watch<GroveSettings>().theme;
+    final l10n  = AppLocalizations.of(context)!;
     final isCheckIn = habit?.mode == HabitMode.checkIn;
     if (habit == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -82,65 +84,65 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       backgroundColor: theme.bg,
       body: CustomScrollView(
         slivers: [
-          _appBar(context, habit, theme),
+          _appBar(context, habit, theme, l10n),
           SliverToBoxAdapter(child: _treeHero(habit)),
-          SliverToBoxAdapter(child: _stats(habit, theme)),
+          SliverToBoxAdapter(child: _stats(habit, theme, l10n)),
           isCheckIn
-            ? SliverToBoxAdapter(child: _checkInStreakCard(habit, theme))
-            : SliverToBoxAdapter(child: _timeSinceRelapseCard(habit, theme)),
-          SliverToBoxAdapter(child: _calendarSection(habit, theme)),
+          ? SliverToBoxAdapter(child: _checkInStreakCard(habit, theme, l10n))
+          : SliverToBoxAdapter(child: _timeSinceRelapseCard(habit, theme, l10n)),
+          SliverToBoxAdapter(child: _calendarSection(habit, theme, l10n)),
           if (!isCheckIn) ...[
-            SliverToBoxAdapter(child: _historyHeader(habit, theme)),
+            SliverToBoxAdapter(child: _historyHeader(habit, theme, l10n)),
             habit.relapses.isEmpty
-              ? SliverToBoxAdapter(child: _noHistory(theme))
-              : SliverList(delegate: SliverChildBuilderDelegate(
-                (_, i) => RelapseEventTile(event: habit.relapses[i], index: i),
-                childCount: habit.relapses.length)),
+            ? SliverToBoxAdapter(child: _noHistory(theme, l10n))
+            : SliverList(delegate: SliverChildBuilderDelegate(
+              (_, i) => RelapseEventTile(event: habit.relapses[i], index: i),
+              childCount: habit.relapses.length)),
           ] else ...[
-            SliverToBoxAdapter(child: _checkInHistoryHeader(habit, theme)),
+            SliverToBoxAdapter(child: _checkInHistoryHeader(habit, theme, l10n)),
             if (habit.checkInDays.isEmpty)
-              SliverToBoxAdapter(child: _noHistory(theme, checkIn: true))
-            else
-              SliverList(delegate: SliverChildBuilderDelegate(
-                (_, i) {
-                  final sorted = habit.checkInDays.toList()..sort((a, b) => b.compareTo(a));
-                  final date = sorted[i];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(color: theme.surface, borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: theme.surfaceHigh)),
-                    child: Row(children: [
-                      Container(width: 28, height: 28,
-                        decoration: BoxDecoration(color: habit.color.withValues(alpha: 0.12), shape: BoxShape.circle),
-                        alignment: Alignment.center,
-                        child: Icon(Icons.check, size: 14, color: habit.color)),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(
-                        DateFormat('EEEE, MMMM d, yyyy').format(date),
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: theme.textPrimary),
-                      )),
-                      Text(DateFormat('h:mm a').format(date), style: TextStyle(fontSize: 11, color: theme.textMuted)),
-                    ]),
-                  );
-                },
-                childCount: habit.checkInDays.length,
-              )),
+              SliverToBoxAdapter(child: _noHistory(theme, l10n, checkIn: true))
+              else
+                SliverList(delegate: SliverChildBuilderDelegate(
+                  (_, i) {
+                    final sorted = habit.checkInDays.toList()..sort((a, b) => b.compareTo(a));
+                    final date = sorted[i];
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(color: theme.surface, borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: theme.surfaceHigh)),
+                      child: Row(children: [
+                        Container(width: 28, height: 28,
+                                  decoration: BoxDecoration(color: habit.color.withValues(alpha: 0.12), shape: BoxShape.circle),
+                                  alignment: Alignment.center,
+                                  child: Icon(Icons.check, size: 14, color: habit.color)),
+                                  const SizedBox(width: 12),
+                                  Expanded(child: Text(
+                                    DateFormat('EEEE, MMMM d, yyyy').format(date),
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: theme.textPrimary),
+                                  )),
+                                 Text(DateFormat('h:mm a').format(date), style: TextStyle(fontSize: 11, color: theme.textMuted)),
+                      ]),
+                    );
+                  },
+                  childCount: habit.checkInDays.length,
+                )),
           ],
-          SliverToBoxAdapter(child: _deleteSection(context, habit, theme)),
+          SliverToBoxAdapter(child: _deleteSection(context, habit, theme, l10n)),
           const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
       ),
     );
   }
 
-  Widget _timeSinceRelapseCard(HabitTree habit, GroveTheme theme) {
+  Widget _timeSinceRelapseCard(HabitTree habit, GroveTheme theme, AppLocalizations l10n) {
     final d       = _timeSinceRelapse;
     final days    = d.inDays;
     final hours   = d.inHours   % 24;
     final minutes = d.inMinutes % 60;
     final seconds = d.inSeconds % 60;
-    final label   = habit.relapses.isEmpty ? 'Clean since start' : 'Time since last relapse';
+    final label   = habit.relapses.isEmpty ? l10n.cleanSinceStart : l10n.timeSinceLastRelapse;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -156,20 +158,20 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                                        color: theme.textSecondary, letterSpacing: 0.8)),
                       const SizedBox(height: 12),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                        TimeUnit(value: days,    label: 'DAYS', color: habit.color),
+                        TimeUnit(value: days,    label: l10n.days, color: habit.color),
                         TimeDivider(color: theme.textMuted),
-                        TimeUnit(value: hours,   label: 'HRS',  color: habit.color),
+                        TimeUnit(value: hours,   label: l10n.hrs,  color: habit.color),
                         TimeDivider(color: theme.textMuted),
-                        TimeUnit(value: minutes, label: 'MIN',  color: habit.color),
+                        TimeUnit(value: minutes, label: l10n.min,  color: habit.color),
                         TimeDivider(color: theme.textMuted),
-                        TimeUnit(value: seconds, label: 'SEC',  color: habit.color),
+                        TimeUnit(value: seconds, label: l10n.sec,  color: habit.color),
                       ]),
         ]),
       ),
     );
   }
 
-  Widget _checkInStreakCard(HabitTree habit, GroveTheme theme) {
+  Widget _checkInStreakCard(HabitTree habit, GroveTheme theme, AppLocalizations l10n) {
     final checkedIn = habit.checkedInToday;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -181,14 +183,14 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
           border:       Border.all(color: habit.color.withValues(alpha: 0.22)),
         ),
         child: Column(children: [
-          Text(checkedIn ? 'Checked in today' : 'Not checked in today',
+          Text(checkedIn ? l10n.checkedInToday : l10n.notCheckedInToday,
                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
                                 color: theme.textSecondary, letterSpacing: 0.8)),
                       const SizedBox(height: 12),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                        _streakUnit(value: habit.checkInStreak, label: 'STREAK', color: habit.color),
-                        _streakUnit(value: habit.checkInDays.length, label: 'TOTAL', color: GroveTheme.streakGold),
-                        _streakUnit(value: habit.totalDays, label: 'DAYS', color: theme.textSecondary),
+                        _streakUnit(value: habit.checkInStreak, label: l10n.streak, color: habit.color),
+                        _streakUnit(value: habit.checkInDays.length, label: l10n.total, color: GroveTheme.streakGold),
+                        _streakUnit(value: habit.totalDays, label: l10n.days, color: theme.textSecondary),
                       ]),
                       const SizedBox(height: 14),
                       GestureDetector(
@@ -210,7 +212,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              checkedIn ? 'Already Checked In' : 'Check In Today',
+                              checkedIn ? l10n.alreadyCheckedIn : l10n.checkInToday,
                               style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w600,
                                 color: checkedIn ? habit.color : Colors.white,
@@ -227,21 +229,21 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   Widget _streakUnit({required int value, required String label, required Color color}) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Text(value.toString(),
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: color,
-                         fontFeatures: const [FontFeature.tabularFigures()])),
-      const SizedBox(height: 2),
-      Text(label, style: TextStyle(fontSize: 9, color: GroveTheme.slateGrey, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: color,
+                       fontFeatures: const [FontFeature.tabularFigures()])),
+                       const SizedBox(height: 2),
+                       Text(label, style: TextStyle(fontSize: 9, color: GroveTheme.slateGrey, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
     ]);
   }
 
-  Widget _appBar(BuildContext ctx, HabitTree habit, GroveTheme theme) =>
+  Widget _appBar(BuildContext ctx, HabitTree habit, GroveTheme theme, AppLocalizations l10n) =>
   SliverAppBar(
     backgroundColor: theme.bg, pinned: true,
     leading: IconButton(
       icon:  const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
       color: theme.textSecondary, onPressed: () => Navigator.pop(ctx)),
       title: GestureDetector(
-        onTap: () => _showRenameDialog(ctx, habit, theme),
+        onTap: () => _showRenameDialog(ctx, habit, theme, l10n),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -263,21 +265,21 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       ],
   );
 
-  void _showRenameDialog(BuildContext ctx, HabitTree habit, GroveTheme theme) {
+  void _showRenameDialog(BuildContext ctx, HabitTree habit, GroveTheme theme, AppLocalizations l10n) {
     final ctrl = TextEditingController(text: habit.name);
     showDialog(
       context: ctx,
       builder: (dialogCtx) => AlertDialog(
         backgroundColor: theme.surfaceHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('Rename Habit', style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.w700)),
+        title: Text(l10n.renameHabit, style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.w700)),
         content: TextField(
           controller:           ctrl,
           autofocus:            true,
           textCapitalization:   TextCapitalization.words,
           style:                TextStyle(color: theme.textPrimary),
           decoration: InputDecoration(
-            labelText:  'Habit Name',
+            labelText:  l10n.habitName,
             prefixIcon: Icon(Icons.edit_outlined, size: 18, color: theme.textMuted),
           ),
           onSubmitted: (val) {
@@ -292,7 +294,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: Text('Cancel', style: TextStyle(color: theme.textSecondary)),
+            child: Text(l10n.cancel, style: TextStyle(color: theme.textSecondary)),
           ),
           FilledButton(
             onPressed: () {
@@ -307,7 +309,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
               backgroundColor: habit.color,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -350,32 +352,32 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     );
   }
 
-  Widget _stats(HabitTree habit, GroveTheme theme) => Padding(
+  Widget _stats(HabitTree habit, GroveTheme theme, AppLocalizations l10n) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
     child: Row(children: [
-      StatChip(label: 'Current Streak', value: '${habit.daysElapsed}d', color: habit.color),
+      StatChip(label: l10n.currentStreak, value: l10n.daysSuffix(habit.daysElapsed), color: habit.color),
       const SizedBox(width: 10),
-      StatChip(label: 'Peak Record',    value: '${habit.peakDays}d',    color: GroveTheme.streakGold),
+      StatChip(label: l10n.peakRecord,    value: l10n.daysSuffix(habit.peakDays),    color: GroveTheme.streakGold),
       const SizedBox(width: 10),
       StatChip(
-        label: habit.mode == HabitMode.checkIn ? 'Check-ins' : 'Relapses',
+        label: habit.mode == HabitMode.checkIn ? l10n.checkIns : l10n.relapses,
         value: habit.mode == HabitMode.checkIn ? '${habit.checkInDays.length}' : '${habit.relapses.length}',
         color: habit.mode == HabitMode.checkIn ? habit.color : GroveTheme.clayRed,
       ),
     ]),
   );
 
-  Widget _calendarSection(HabitTree habit, GroveTheme theme) {
+  Widget _calendarSection(HabitTree habit, GroveTheme theme, AppLocalizations l10n) {
     final now = DateTime.now();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text('Interactive Monthly Logs',
+          Text(l10n.interactiveMonthlyLogs,
                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
                                 color: theme.textSecondary, letterSpacing: 1.0)),
             const Spacer(),
-            Text('Swipe ← for earlier months',
+            Text(l10n.swipeForEarlierMonths,
                  style: TextStyle(fontSize: 10, color: theme.textMuted, fontStyle: FontStyle.italic)),
         ]),
         const SizedBox(height: 12),
@@ -401,11 +403,11 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
         const SizedBox(height: 8),
         Center(child: Text(
           _currentMonthOffset == -_initialPageIndex
-          ? '← Log a date before tracking started'
-        : _currentMonthOffset == 0
-        ? 'This month'
-        : DateFormat('MMMM yyyy').format(DateTime(now.year, now.month + _currentMonthOffset, 1)),
-        style: TextStyle(fontSize: 10, color: theme.textMuted, fontStyle: FontStyle.italic),
+          ? l10n.logDateBeforeTracking
+          : _currentMonthOffset == 0
+          ? l10n.thisMonth
+          : DateFormat('MMMM yyyy').format(DateTime(now.year, now.month + _currentMonthOffset, 1)),
+          style: TextStyle(fontSize: 10, color: theme.textMuted, fontStyle: FontStyle.italic),
         )),
       ]),
     );
@@ -414,6 +416,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   void _showEarlierDatePicker(BuildContext ctx, HabitTree habit) {
     final theme      = ctx.read<GroveSettings>().theme;
     final model      = ctx.read<GroveModel>();
+    final l10n       = AppLocalizations.of(ctx)!;
     DateTime selectedDate = habit.startDate.subtract(const Duration(days: 1));
     TimeOfDay selectedTime = TimeOfDay.now();
     final reasonCtrl = TextEditingController();
@@ -440,8 +443,8 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                                                                   child: const Icon(Icons.history_rounded, color: GroveTheme.clayRed, size: 20)),
                                                                   const SizedBox(width: 12),
                                                                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                                    Text('Log Earlier Date', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: theme.textPrimary)),
-                                                                    Text('Before tracking started', style: TextStyle(fontSize: 12, color: theme.textSecondary)),
+                                                                    Text(l10n.logEarlierDateTitle, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: theme.textPrimary)),
+                                                                    Text(l10n.beforeTrackingStarted, style: TextStyle(fontSize: 12, color: theme.textSecondary)),
                                                                   ])),
                                                       ]),
                             const SizedBox(height: 16),
@@ -451,12 +454,12 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                               borderRadius: BorderRadius.circular(12), border: Border.all(color: theme.primary.withValues(alpha: 0.2))),
                               child: Row(children: [
                                 Icon(Icons.info_outline, size: 16, color: theme.primary), const SizedBox(width: 8),
-                                Expanded(child: Text('This will extend your tracking history earlier and recalculate your peak streaks.',
+                                Expanded(child: Text(l10n.extendHistoryInfo,
                                                      style: TextStyle(fontSize: 11, color: theme.textSecondary, height: 1.4))),
                               ]),
                             ),
                             const SizedBox(height: 20),
-                            Text('DATE', style: TextStyle(color: theme.textMuted, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
+                            Text(l10n.date, style: TextStyle(color: theme.textMuted, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
                               onPressed: () async {
@@ -471,7 +474,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                             ),
                             const SizedBox(height: 12),
-                            Text('TIME', style: TextStyle(color: theme.textMuted, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
+                            Text(l10n.time, style: TextStyle(color: theme.textMuted, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
                               onPressed: () async {
@@ -485,11 +488,11 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                             ),
                             const SizedBox(height: 16),
-                            Text('LOGGED REASON (Optional)', style: TextStyle(color: theme.textMuted, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
+                            Text(l10n.loggedReason, style: TextStyle(color: theme.textMuted, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 8),
                             TextField(controller: reasonCtrl, maxLines: 3,
                                       style: TextStyle(color: theme.textPrimary, fontSize: 14),
-                                      decoration: const InputDecoration(hintText: 'What happened that day…', contentPadding: EdgeInsets.all(12))),
+                                      decoration: InputDecoration(hintText: l10n.whatHappenedHint, contentPadding: const EdgeInsets.all(12))),
                                       const SizedBox(height: 24),
                                       FilledButton.icon(
                                         onPressed: () {
@@ -499,7 +502,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                                           HapticFeedback.mediumImpact(); Navigator.pop(sheetCtx);
                                         },
                                         icon: const Icon(Icons.refresh_rounded, size: 16),
-                                        label: const Text('Log as Relapse on This Date', style: TextStyle(fontWeight: FontWeight.w600)),
+                                        label: Text(l10n.logAsRelapseOnDate, style: const TextStyle(fontWeight: FontWeight.w600)),
                                         style: FilledButton.styleFrom(backgroundColor: GroveTheme.clayRed,
                                                                       minimumSize: const Size.fromHeight(52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                                       ),
@@ -511,7 +514,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                                 HapticFeedback.lightImpact(); Navigator.pop(sheetCtx);
                               },
                               icon: const Icon(Icons.expand_less_rounded, size: 16),
-                              label: const Text('Only Extend Start Date (No Relapse)'),
+                              label: Text(l10n.onlyExtendStartDate),
                               style: OutlinedButton.styleFrom(foregroundColor: theme.textPrimary,
                                                               side: BorderSide(color: theme.textMuted.withValues(alpha: 0.4)),
                                                               minimumSize: const Size.fromHeight(48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
@@ -525,53 +528,53 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     );
   }
 
-  Widget _historyHeader(HabitTree habit, GroveTheme theme) => Padding(
+  Widget _historyHeader(HabitTree habit, GroveTheme theme, AppLocalizations l10n) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
     child: Row(children: [
-      Text('Relapse Timeline Sweep',
+      Text(l10n.relapseSweepTimeline,
            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: theme.textSecondary, letterSpacing: 1.0)),
            const Spacer(),
            Container(
              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
              decoration: BoxDecoration(color: GroveTheme.clayRed.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-             child: Text('${habit.relapses.length} total',
-                         style: const TextStyle(fontSize: 11, color: GroveTheme.clayRed, fontWeight: FontWeight.w500))),
+             child: Text(l10n.totalCount(habit.relapses.length),
+             style: const TextStyle(fontSize: 11, color: GroveTheme.clayRed, fontWeight: FontWeight.w500))),
     ]),
   );
 
-  Widget _noHistory(GroveTheme theme, {bool checkIn = false}) => Padding(
+  Widget _noHistory(GroveTheme theme, AppLocalizations l10n, {bool checkIn = false}) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 32),
     child: Center(child: Text(
-      checkIn ? 'No check-ins yet. Start today!'
-              : 'No relapses recorded. Keep growing.',
+      checkIn ? l10n.noCheckInsYet
+      : l10n.noRelapsesRecorded,
       style: TextStyle(color: theme.textMuted, fontStyle: FontStyle.italic, fontSize: 13))),
   );
 
-  Widget _checkInHistoryHeader(HabitTree habit, GroveTheme theme) => Padding(
+  Widget _checkInHistoryHeader(HabitTree habit, GroveTheme theme, AppLocalizations l10n) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
     child: Row(children: [
-      Text('Check-In History',
+      Text(l10n.checkInHistory,
            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: theme.textSecondary, letterSpacing: 1.0)),
            const Spacer(),
            Container(
              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
              decoration: BoxDecoration(color: habit.color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-             child: Text('${habit.checkInDays.length} total',
-                         style: TextStyle(fontSize: 11, color: habit.color, fontWeight: FontWeight.w500))),
+             child: Text(l10n.totalCount(habit.checkInDays.length),
+             style: TextStyle(fontSize: 11, color: habit.color, fontWeight: FontWeight.w500))),
     ]),
   );
 
-  Widget _deleteSection(BuildContext ctx, HabitTree habit, GroveTheme theme) => Padding(
+  Widget _deleteSection(BuildContext ctx, HabitTree habit, GroveTheme theme, AppLocalizations l10n) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 32, 20, 20),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Divider(color: theme.textMuted.withValues(alpha: 0.2), height: 1),
       const SizedBox(height: 24),
-      Text('Danger Zone', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: theme.textMuted, letterSpacing: 1.0)),
+      Text(l10n.dangerZone, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: theme.textMuted, letterSpacing: 1.0)),
       const SizedBox(height: 12),
       OutlinedButton.icon(
         onPressed: () => _confirmDelete(ctx, habit),
         icon:  const Icon(Icons.delete_outline, size: 18),
-        label: const Text('Delete Habit Permanently'),
+        label: Text(l10n.deleteHabitPermanently),
         style: OutlinedButton.styleFrom(
           foregroundColor: GroveTheme.clayRed,
             side:    BorderSide(color: GroveTheme.clayRed.withValues(alpha: 0.4)),
@@ -584,16 +587,17 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   void _confirmDelete(BuildContext ctx, HabitTree habit) {
     final groveModel    = context.read<GroveModel>();
     final settingsTheme = context.read<GroveSettings>().theme;
+    final l10n           = AppLocalizations.of(ctx)!;
     showDialog(
       context: ctx,
       builder: (dialogContext) => AlertDialog(
-        title:   const Text('Delete Habit?'),
+        title:   Text(l10n.deleteHabit),
         content: Text(
-          'This will permanently delete "${habit.name}" and all its history. This action cannot be undone.',
+          l10n.deleteHabitConfirm(habit.name),
           style: TextStyle(color: settingsTheme.textSecondary)),
           actions: [
             TextButton(onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Cancel', style: TextStyle(color: settingsTheme.textSecondary))),
+            child: Text(l10n.cancel, style: TextStyle(color: settingsTheme.textSecondary))),
             FilledButton(
               onPressed: () async {
                 final nav = Navigator.of(ctx);
@@ -608,7 +612,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 }
               },
               style: FilledButton.styleFrom(backgroundColor: GroveTheme.clayRed),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
       ),

@@ -37,7 +37,7 @@ class GroveModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _persist() async {
+  Future<void> _persist({bool skipNotifications = false}) async {
     if (_prefs == null) return;
     try {
       await _prefs!.setStringList(_idsKey, _habits.map((h) => h.id).toList());
@@ -45,9 +45,11 @@ class GroveModel extends ChangeNotifier {
         await _prefs!.setString(h.id, h.toJson());
       }
       await GroveWidgetBridge.instance.renderAndUpdate(_habits);
-      final enabled = _prefs?.getBool('milestone_notifications') ?? false;
-      if (enabled) {
-        await GroveNotifications.instance.checkAndNotifyMilestones(_habits);
+      if (!skipNotifications) {
+        final enabled = _prefs?.getBool('milestone_notifications') ?? false;
+        if (enabled) {
+          await GroveNotifications.instance.checkAndNotifyMilestones(_habits);
+        }
       }
     } catch (e) {
       debugPrint('Persist error: $e');
@@ -250,7 +252,8 @@ class GroveModel extends ChangeNotifier {
       }
       if (imported.isEmpty) return false;
       _habits = imported;
-      await _persist();
+      await _persist(skipNotifications: true);
+      await GroveNotifications.instance.markStagesSeen(_habits);
       notifyListeners();
       return true;
     } catch (e) {

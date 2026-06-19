@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:grove/l10n/app_localizations.dart';
 import 'package:grove/models/grove_models.dart';
 import 'package:grove/providers/grove_settings.dart';
 import 'package:grove/theme/grove_theme.dart';
@@ -35,34 +36,37 @@ class EarlierDateSentinel extends StatelessWidget {
   const EarlierDateSentinel({super.key, required this.habit, required this.theme, required this.onLogEarlierDate});
 
   @override
-  Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.symmetric(horizontal: 4),
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(color: theme.surface, borderRadius: BorderRadius.circular(20),
-    border: Border.all(color: theme.primary.withValues(alpha: 0.25), width: 1.5)),
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Container(width: 56, height: 56,
-                decoration: BoxDecoration(color: theme.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
-                child: Icon(Icons.history_rounded, color: theme.primary, size: 28)),
-                const SizedBox(height: 16),
-                Text('Earlier than your logs?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: theme.textPrimary), textAlign: TextAlign.center),
-                const SizedBox(height: 8),
-                Text('Tracking started ${DateFormat('MMM d, yyyy').format(habit.startDate)}.\nIf something happened before that, you can log it here.',
-                style: TextStyle(fontSize: 12, color: theme.textSecondary, height: 1.5), textAlign: TextAlign.center),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  onPressed: onLogEarlierDate,
-                  icon:  const Icon(Icons.add_rounded, size: 18),
-                  label: const Text('Log an Earlier Date', style: TextStyle(fontWeight: FontWeight.w600)),
-                  style: FilledButton.styleFrom(backgroundColor: theme.primary,
-                                                minimumSize: const Size(double.infinity, 50),
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                ),
-                const SizedBox(height: 12),
-                Text('This extends your history and recalculates streaks',
-                     style: TextStyle(fontSize: 10, color: theme.textMuted), textAlign: TextAlign.center),
-    ]),
-  );
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(color: theme.surface, borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: theme.primary.withValues(alpha: 0.25), width: 1.5)),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Container(width: 56, height: 56,
+                  decoration: BoxDecoration(color: theme.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
+                  child: Icon(Icons.history_rounded, color: theme.primary, size: 28)),
+                  const SizedBox(height: 16),
+                  Text(l10n.earlierThanLogs, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: theme.textPrimary), textAlign: TextAlign.center),
+                  const SizedBox(height: 8),
+                  Text(l10n.trackingStarted(DateFormat('MMM d, yyyy').format(habit.startDate)),
+                  style: TextStyle(fontSize: 12, color: theme.textSecondary, height: 1.5), textAlign: TextAlign.center),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: onLogEarlierDate,
+                    icon:  const Icon(Icons.add_rounded, size: 18),
+                    label: Text(l10n.logEarlierDate, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    style: FilledButton.styleFrom(backgroundColor: theme.primary,
+                                                  minimumSize: const Size(double.infinity, 50),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(l10n.extendsHistoryNote,
+                       style: TextStyle(fontSize: 10, color: theme.textMuted), textAlign: TextAlign.center),
+      ]),
+    );
+  }
 }
 
 class StatChip extends StatelessWidget {
@@ -91,6 +95,7 @@ class RelapseEventTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme   = context.watch<GroveSettings>().theme;
+    final l10n    = AppLocalizations.of(context)!;
     final dateStr = DateFormat('EEE, MMM d yyyy').format(event.timestamp);
     final timeStr = DateFormat('h:mm a').format(event.timestamp);
     return Container(
@@ -112,8 +117,8 @@ class RelapseEventTile extends StatelessWidget {
                     ]),
                     if (event.peakDays > 0) ...[
                       const SizedBox(height: 3),
-                      Text('Peak Sweep: ${event.peakDays} days',
-                           style: const TextStyle(fontSize: 10, color: GroveTheme.streakGold, fontWeight: FontWeight.w500)),
+                      Text(l10n.peakSweep(event.peakDays),
+                      style: const TextStyle(fontSize: 10, color: GroveTheme.streakGold, fontWeight: FontWeight.w500)),
                     ],
                     if (event.reason.isNotEmpty) ...[
                       const SizedBox(height: 6),
@@ -121,7 +126,7 @@ class RelapseEventTile extends StatelessWidget {
                            style: TextStyle(fontSize: 13, color: theme.textSecondary, fontStyle: FontStyle.italic, height: 1.4)),
                     ] else ...[
                       const SizedBox(height: 4),
-                      Text('No reason recorded.', style: TextStyle(fontSize: 12, color: theme.textMuted)),
+                      Text(l10n.noReasonRecorded, style: TextStyle(fontSize: 12, color: theme.textMuted)),
                     ],
                   ])),
       ]),

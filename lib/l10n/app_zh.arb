@@ -23,6 +23,8 @@
   "checkInSubtitle2": "根据打卡次数生长",
 
   "history": "历史",
+  "daysSuffix": "{days}天",
+  "historyCount": "历史记录 ({count})",
   "relapse": "复发",
   "checkedIn": "已打卡",
   "checkInAction": "打卡",

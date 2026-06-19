@@ -23,6 +23,8 @@
   "checkInSubtitle2": "النمو بناءً على تسجيلات الحضور",
 
   "history": "السجل",
+  "daysSuffix": "{days} يوم",
+  "historyCount": "السجل ({count})",
   "relapse": "انتكاسة",
   "checkedIn": "تم التسجيل",
   "checkInAction": "تسجيل الحضور",

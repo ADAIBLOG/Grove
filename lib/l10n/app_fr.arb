@@ -23,6 +23,8 @@
   "checkInSubtitle2": "Croissance basée sur les pointages",
 
   "history": "Historique",
+  "daysSuffix": "{days} j",
+  "historyCount": "Historique ({count})",
   "relapse": "Rechute",
   "checkedIn": "Pointé",
   "checkInAction": "Pointer",

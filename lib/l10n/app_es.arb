@@ -23,6 +23,8 @@
   "checkInSubtitle2": "El crecimiento se basa en los registros",
 
   "history": "Historial",
+  "daysSuffix": "{days}d",
+  "historyCount": "Historial ({count})",
   "relapse": "Recaída",
   "checkedIn": "Registrado",
   "checkInAction": "Registrarse",

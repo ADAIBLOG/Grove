@@ -23,6 +23,8 @@
   "checkInSubtitle2": "Growth based on check-ins",
 
   "history": "History",
+  "daysSuffix": "{days}d",
+  "historyCount": "History ({count})",
   "relapse": "Relapse",
   "checkedIn": "Checked In",
   "checkInAction": "Check In",

@@ -23,6 +23,8 @@
   "checkInSubtitle2": "根據打卡次數生長",
 
   "history": "歷史",
+  "daysSuffix": "{days}天",
+  "historyCount": "歷史記錄 ({count})",
   "relapse": "復發",
   "checkedIn": "已打卡",
   "checkInAction": "打卡",

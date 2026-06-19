@@ -40,7 +40,9 @@ When reporting a bug, try to include:
 - Bug fixes
 - Performance improvements
 - Accessibility improvements
-- New features that fit Grove's theme (habit/sobriety tracking, the fractal tree system, etc) 
+- New features that fit Grove's theme (habit/sobriety tracking, the fractal tree system, etc)
+- New language translations
+- Improvements to existing translations
 
 ### What to check first
 
@@ -58,6 +60,55 @@ Grove is FOSS software built for people, not profit. Contributions should respec
 - Privacy is non-negotiable
 
 ---
+
+## Adding or Updating Translations
+
+Grove welcomes translation contributions. If you'd like to add support for a new language or improve an existing translation, follow these steps:
+
+### Adding a New Language
+
+1. Locate the localization files in `lib/l10n/`
+
+2. Copy `app_en.arb` and rename it using the appropriate language code, for example:
+
+   * `app_es.arb` for Spanish
+   * `app_fr.arb` for French
+   * `app_de.arb` for German
+
+3. Translate all string values while keeping:
+
+   * Placeholder names unchanged (`{count}`, `{name}`, etc.)
+   * Metadata entries (`@key`) intact
+   * Formatting and punctuation consistent where appropriate
+
+4. Add the locale to the supported locales list if required by the current implementation.
+
+5. Generate localization files:
+
+```bash
+flutter gen-l10n
+```
+
+6. Run the app and verify:
+
+   * The language appears correctly when selected
+   * Text fits within the UI
+   * No untranslated strings remain
+
+### Updating Existing Translations
+
+* Keep translations natural and contextually accurate rather than translating word-for-word.
+* Maintain consistency with existing terminology throughout the app.
+* Test any modified translations before submitting a pull request.
+
+### Translation Guidelines
+
+* Use clear, natural language.
+* Avoid machine-generated translations without review.
+* Preserve placeholders and variables exactly as written.
+* Keep accessibility and readability in mind.
+
+If you're unsure about a translation, feel free to open a discussion before submitting a pull request.
 
 ## Development Setup
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:grove/l10n/app_localizations.dart';
 import 'package:grove/providers/grove_settings.dart';
 import 'package:grove/theme/grove_theme.dart';
 import 'package:grove/widgets/animated_tree_widget.dart';
@@ -14,64 +15,59 @@ class OnboardingSheet extends StatefulWidget {
 class _OnboardingSheetState extends State<OnboardingSheet> {
   int _page = 0;
 
-  static const _steps = [
+  List<_OnboardingStep> _steps(AppLocalizations l10n) => [
     _OnboardingStep(
       icon:      Icons.waving_hand_rounded,
-      title:     'Welcome to Grove 🌿',
-      body:      'A private sobriety and habit tracker where trees represent your growth, '
-    'the longer you stay clean, the more vibrant and lush your trees become.',
-    treeStage: GrowthStage.seed,
-    treeColor: GroveTheme.mossGreen,
+      title:     l10n.onboarding0Title,
+      body:      l10n.onboarding0Body,
+      treeStage: GrowthStage.seed,
+      treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.forest_rounded,
-      title:     'Plant a Tree',
-      body:      'Tap "Plant a Tree" to create a habit. Give it a name, pick a colour, '
-    'and Grove generates a unique tree just for it. Each one grows differently.',
-    treeStage: GrowthStage.sprout,
-    treeColor: GroveTheme.mossGreen,
+      title:     l10n.onboarding1Title,
+      body:      l10n.onboarding1Body,
+      treeStage: GrowthStage.sprout,
+      treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.show_chart_rounded,
-      title:     'Watch It Grow',
-      body:      'Every day clean helps your tree mature through five growth stages. '
-    'from a tiny seed all the way to a full grove tree with swaying branches and leaves.',
-    treeStage: GrowthStage.sapling,
-    treeColor: GroveTheme.mossGreen,
+      title:     l10n.onboarding2Title,
+      body:      l10n.onboarding2Body,
+      treeStage: GrowthStage.sapling,
+      treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.refresh_rounded,
-      title:     'Log a Relapse',
-      body:      'If you slip up, record it honestly. Grove tracks your longest streaks and history, '
-    'so your progress is never erased.',
-    treeStage: GrowthStage.youngTree,
-    treeColor: GroveTheme.clayRed,
+      title:     l10n.onboarding3Title,
+      body:      l10n.onboarding3Body,
+      treeStage: GrowthStage.youngTree,
+      treeColor: GroveTheme.clayRed,
     ),
     _OnboardingStep(
       icon:      Icons.calendar_month_outlined,
-      title:     'Your History',
-      body:      'Open any tree to explore calendars, milestones, streak history, relapse notes, '
-    'and insights into your long-term consistency.',
-    treeStage: GrowthStage.groveTree,
-    treeColor: GroveTheme.mossGreen,
+      title:     l10n.onboarding4Title,
+      body:      l10n.onboarding4Body,
+      treeStage: GrowthStage.groveTree,
+      treeColor: GroveTheme.mossGreen,
     ),
     _OnboardingStep(
       icon:      Icons.lock_outline_rounded,
-      title:     'Fully Private',
-      body:      'Everything stays on your device. Nothing is ever sent anywhere. '
-    'Back up or move your grove anytime via Export / Import in Settings. '
-    'Now go grow something worth keeping. 🌱',
-    treeStage: GrowthStage.groveTree,
-    treeColor: GroveTheme.mossGreen,
+      title:     l10n.onboarding5Title,
+      body:      l10n.onboarding5Body,
+      treeStage: GrowthStage.groveTree,
+      treeColor: GroveTheme.mossGreen,
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final theme     = context.watch<GroveSettings>().theme;
+    final l10n      = AppLocalizations.of(context)!;
+    final steps     = _steps(l10n);
     final bottomPad = MediaQuery.of(context).padding.bottom;
-    final step      = _steps[_page];
-    final isLast    = _page == _steps.length - 1;
+    final step      = steps[_page];
+    final isLast    = _page == steps.length - 1;
 
     return Container(
       decoration: BoxDecoration(
@@ -134,7 +130,7 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
           const SizedBox(height: 28),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_steps.length, (i) => AnimatedContainer(
+            children: List.generate(steps.length, (i) => AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               margin:   const EdgeInsets.symmetric(horizontal: 3),
               width:    i == _page ? 18 : 6, height: 6,
@@ -157,7 +153,7 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
                         minimumSize:     const Size.fromHeight(50),
                         shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Back'),
+                    child: Text(l10n.back),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -179,7 +175,7 @@ class _OnboardingSheetState extends State<OnboardingSheet> {
                     shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
                   child: Text(
-                    isLast ? 'Start Growing 🌱' : 'Next',
+                    isLast ? l10n.startGrowing : l10n.next,
                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
                   ),
                 ),

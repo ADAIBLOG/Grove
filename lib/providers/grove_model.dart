@@ -5,7 +5,7 @@ import 'package:grove/models/grove_models.dart';
 import 'package:grove/services/grove_notifications.dart';
 import 'package:grove/services/widget_bridge.dart';
 
-class GroveModel extends ChangeNotifier {
+class GroveModel extends ChangeNotifier with WidgetsBindingObserver {
   List<HabitTree> _habits = [];
   List<HabitTree> get habits => List.unmodifiable(_habits);
 
@@ -16,9 +16,28 @@ class GroveModel extends ChangeNotifier {
     try {
       _prefs = await SharedPreferences.getInstance();
       _load();
+      WidgetsBinding.instance.addObserver(this);
     } catch (e) {
       debugPrint('GroveModel init error: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _reloadFromPrefs();
+    }
+  }
+
+  void _reloadFromPrefs() {
+    if (_prefs == null) return;
+    _load();
   }
 
   void _load() {

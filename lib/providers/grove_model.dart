@@ -35,8 +35,9 @@ class GroveModel extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  void _reloadFromPrefs() {
+  Future<void> _reloadFromPrefs() async {
     if (_prefs == null) return;
+    await _prefs!.reload();
     _load();
   }
 
